@@ -8,15 +8,15 @@ import 'package:dio/dio.dart';
 import '../../domain/repositories/maps_repo.dart';
 
 class HomeRepoEmpl extends HomeRepo {
-  final HomeRemoteDataSource homeRemoteDataSource;
+  final StoresRemoteDataSource homeRemoteDataSource;
 
   HomeRepoEmpl({required this.homeRemoteDataSource});
 
   @override
-  Future<Either<Failure, List<StorsEntites>>> featuredStors() async {
-    List<StorsEntites> storsList;
+  Future<Either<Failure, List<StoresCategoriesEntites>>> fechCategore() async {
+    List<StoresCategoriesEntites> storsList;
     try {
-      storsList = await homeRemoteDataSource.fechStors();
+      storsList = await homeRemoteDataSource.fechCategore();
 
       return right(storsList);
     } catch (e) {
@@ -28,11 +28,14 @@ class HomeRepoEmpl extends HomeRepo {
   }
 
   @override
-  Future<Either<Failure, List<StoresCategoriesEntites>>>
-  fechStoreCategories() async {
-    List<StoresCategoriesEntites> storesCategoriesList;
+  Future<Either<Failure, List<StorsEntites>>> fechstoresByCategoreId({
+    required String id,
+  }) async {
+    List<StorsEntites> storesCategoriesList;
     try {
-      storesCategoriesList = await homeRemoteDataSource.fechStoreCategories();
+      storesCategoriesList = await homeRemoteDataSource.fechstoresByCategoreId(
+        id: id,
+      );
 
       return right(storesCategoriesList);
     } catch (e) {

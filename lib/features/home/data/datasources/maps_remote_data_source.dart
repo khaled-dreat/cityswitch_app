@@ -6,24 +6,26 @@ import '../../domain/entities/store_categories_entites.dart';
 import '../models/stores/stores.dart';
 import '../models/stores_categories/m_stores_categories.dart';
 
-abstract class HomeRemoteDataSource {
-  Future<List<StorsEntites>> fechStors();
-  Future<List<StoresCategoriesEntites>> fechStoreCategories();
+abstract class StoresRemoteDataSource {
+  Future<List<StoresCategoriesEntites>> fechCategore();
+  Future<List<StorsEntites>> fechstoresByCategoreId({required String id});
 }
 
-class MapsDataSourceImp extends HomeRemoteDataSource {
+class StoresDataSourceImp extends StoresRemoteDataSource {
   final ApiService apiService;
 
-  MapsDataSourceImp({required this.apiService});
+  StoresDataSourceImp({required this.apiService});
   @override
-  Future<List<StorsEntites>> fechStors() async {
+  Future<List<StoresCategoriesEntites>> fechCategore() async {
     try {
-      var data = await apiService.get(endPoint: apiService.stores);
+      var data = await apiService.get(endPoint: apiService.categories);
       if (data is List) {
-        return data.map((item) => StorsModel.fromJson(item)).toList();
+        return data
+            .map((item) => StoresCategoriesModel.fromJson(item))
+            .toList();
       } else if (data is Map<String, dynamic> && data.containsKey('items')) {
         return (data['items'] as List)
-            .map((item) => StorsModel.fromJson(item))
+            .map((item) => StoresCategoriesModel.fromJson(item))
             .toList();
       } else {
         throw Exception('Unexpected data format');
@@ -35,16 +37,19 @@ class MapsDataSourceImp extends HomeRemoteDataSource {
   }
 
   @override
-  Future<List<StoresCategoriesEntites>> fechStoreCategories() async {
+  Future<List<StorsEntites>> fechstoresByCategoreId({
+    required String id,
+  }) async {
     try {
-      var data = await apiService.get(endPoint: apiService.categories);
+      var data = await apiService.getByID(
+        endPoint: apiService.storesByCategoreId,
+        id: id,
+      );
       if (data is List) {
-        return data
-            .map((item) => StoresCategoriesModel.fromJson(item))
-            .toList();
+        return data.map((item) => StorsModel.fromJson(item)).toList();
       } else if (data is Map<String, dynamic> && data.containsKey('items')) {
         return (data['items'] as List)
-            .map((item) => StoresCategoriesModel.fromJson(item))
+            .map((item) => StorsModel.fromJson(item))
             .toList();
       } else {
         throw Exception('Unexpected data format');

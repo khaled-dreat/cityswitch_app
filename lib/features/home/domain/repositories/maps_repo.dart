@@ -5,6 +5,8 @@ import 'package:dartz/dartz.dart';
 import '../../../../core/utils/constant/app_failure.dart';
 
 abstract class HomeRepo {
-  Future<Either<Failure, List<StorsEntites>>> featuredStors();
-  Future<Either<Failure, List<StoresCategoriesEntites>>> fechStoreCategories();
+  Future<Either<Failure, List<StoresCategoriesEntites>>> fechCategore();
+  Future<Either<Failure, List<StorsEntites>>> fechstoresByCategoreId({
+    required String id,
+  });
 }

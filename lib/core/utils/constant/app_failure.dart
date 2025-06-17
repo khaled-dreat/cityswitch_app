@@ -1,4 +1,10 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:developer';
+
+import 'package:cityswitch_app/features/auth/data/models/add_user_failure/m_add_user_failure.dart';
 import 'package:dio/dio.dart';
+
+import '../../../features/auth/data/models/add_user_failure/m_error.dart';
 
 abstract class Failure {
   final String message;
@@ -7,7 +13,9 @@ abstract class Failure {
 }
 
 class ServerFailure extends Failure {
-  ServerFailure({required super.message});
+  final ErrorModel? errorModel;
+
+  ServerFailure({this.errorModel, required super.message});
   factory ServerFailure.fromDiorError(DioException e) {
     switch (e.type) {
       case DioExceptionType.connectionTimeout:
@@ -44,7 +52,8 @@ class ServerFailure extends Failure {
         message: 'There is a problem with server, please try later',
       );
     } else if (statusCode == 400 || statusCode == 401 || statusCode == 403) {
-      return ServerFailure(message: response['error']['message']);
+      log(response.toString());
+      return ServerFailure(message: response.toString());
     } else {
       return ServerFailure(message: 'There was an error , please try again');
     }

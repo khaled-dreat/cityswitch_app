@@ -21,3 +21,8 @@ class StoresCategoriesSuccess extends StoresCategoriesState {
   final List<StoresCategoriesEntites> storesCategories;
   const StoresCategoriesSuccess({required this.storesCategories});
 }
+
+class SelectedStoreCategore extends StoresCategoriesState {
+  final StoresCategoriesEntites storesCategories;
+  const SelectedStoreCategore({required this.storesCategories});
+}

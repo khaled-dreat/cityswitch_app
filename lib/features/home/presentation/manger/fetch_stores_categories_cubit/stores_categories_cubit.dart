@@ -10,9 +10,9 @@ part 'stores_categories_state.dart';
 class StoresCategoriesCubit extends Cubit<StoresCategoriesState> {
   StoresCategoriesCubit(this.featuredMapsUseCase)
     : super(StoresCategoriesInitial());
-  final FeaturedStoresCategoriesUseCase featuredMapsUseCase;
+  final StoresCategoriesUseCase featuredMapsUseCase;
 
-  Future<void> fetchStors() async {
+  Future<void> fetchStoresCategories() async {
     emit(StoresCategoriesLoading());
     var result = await featuredMapsUseCase.call();
     result.fold(
