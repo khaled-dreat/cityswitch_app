@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import '../../features/home/domain/entities/maps_entites.dart';
+import '../../features/home/domain/entities/stors_entites.dart';
 import '../utils/location_service/location_service.dart';
 
 class CalculateZoomForFurthestStore {

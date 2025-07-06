@@ -1,14 +1,18 @@
 import 'package:cityswitch_app/features/home/presentation/widgets/home_view_body.dart';
 import 'package:flutter/material.dart';
-import '../../../../core/utils/widgets/app_bar/app_bar.dart';
 
-class HomeView extends StatelessWidget {
+class HomeView extends StatefulWidget {
   static const String nameRoute = "HomeView";
 
   const HomeView({super.key});
 
   @override
+  State<HomeView> createState() => _HomeViewState();
+}
+
+class _HomeViewState extends State<HomeView> {
+  @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: HomeViewBody());
+    return Scaffold(body: HomeViewBody());
   }
 }

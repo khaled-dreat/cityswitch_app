@@ -1,14 +1,11 @@
 import 'dart:developer';
-
 import 'package:cityswitch_app/core/utils/local_data/app_local_data_key.dart';
-import 'package:cityswitch_app/core/utils/routes/app_routes.dart';
 import 'package:cityswitch_app/features/auth/presentation/manger/wrapper_cubit/wrapper_cubit.dart';
 import 'package:cityswitch_app/features/auth/presentation/manger/wrapper_cubit/wrapper_state.dart';
 import 'package:cityswitch_app/features/auth/presentation/pages/sign_in_view.dart';
-import 'package:cityswitch_app/features/home/presentation/pages/home_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import '../../../bottom_navigation_bar/bottom_navigation_bar.dart';
 import '../manger/auth_cubit/auth_cubit.dart';
 
 class Wrapper extends StatelessWidget {
@@ -26,7 +23,7 @@ class Wrapper extends StatelessWidget {
         child: BlocBuilder<WrapperCubit, WrapperState>(
           builder: (context, state) {
             if (state is UserExists) {
-              return HomeView();
+              return CustomBottomNavigationBar();
             } else if (state is UserDoesNotExist) {
               log("❌ لا يوجد مستخدم محفوظ");
               return SignInView();

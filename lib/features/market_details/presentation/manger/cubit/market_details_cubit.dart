@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
-import 'package:cityswitch_app/features/home/domain/entities/maps_entites.dart';
 import 'package:equatable/equatable.dart';
+
+import '../../../../home/domain/entities/stors_entites.dart';
 
 part 'market_details_state.dart';
 

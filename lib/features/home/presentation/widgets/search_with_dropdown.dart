@@ -32,14 +32,14 @@ class _SearchWithDropdownState extends State<SearchWithDropdown> {
                 return DropdownButtonHideUnderline(
                   child: DropdownButton<String>(
                     borderRadius: BorderRadius.circular(20),
-                    value: context.watch<StoreFilterCubit>().state,
+                    value: context.watch<SelectCategoryDropDownCubit>().state,
                     icon: Icon(Icons.arrow_drop_down),
                     onChanged: (value) async {
                       //    //  await context.read<StorsCubit>().fetchStors();
-                      await context.read<StorsCubit>().fetchstoresByCategoreId(
-                        id: value!,
-                      );
-                      context.read<StoreFilterCubit>().selectCategory(value!);
+                    
+                      context
+                          .read<SelectCategoryDropDownCubit>()
+                          .selectCategory(value!);
                     },
                     items:
                         state.storesCategories.map((category) {

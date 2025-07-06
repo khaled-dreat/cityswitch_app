@@ -71,4 +71,5 @@ class AppColors {
 
   static const Color blueDarkish = Color(0xFF1F2937); // darkish blue
   static const Color blueMid = Color(0xFF376EBB); // mid-tone blue
+  static const Color blue = Color(0xFF1E88E5); // mid-tone blue
 }

@@ -1,21 +1,30 @@
 import 'package:cityswitch_app/core/setup_service_locator/setup_service_locator.dart';
 import 'package:cityswitch_app/core/utils/routes/app_routes.dart';
+import 'package:cityswitch_app/features/add_store/data/repositories/add_store_repo_emp.dart';
+import 'package:cityswitch_app/features/add_store/domain/usecases/add_store%20_use_case.dart';
+import 'package:cityswitch_app/features/add_store/domain/usecases/fetch_search_addresses_use_case.dart';
 import 'package:cityswitch_app/features/auth/data/repositories/auth_repo_emp.dart';
 import 'package:cityswitch_app/features/auth/domain/usecases/login_user_use_case.dart';
 import 'package:cityswitch_app/features/auth/domain/usecases/registeration_user_use_case.dart';
 import 'package:cityswitch_app/features/home/data/repositories/home_repo_emp.dart';
-import 'package:cityswitch_app/features/home/domain/entities/maps_entites.dart';
-import 'package:cityswitch_app/features/home/domain/usecases/stores_by_categore_Id_use_case.dart';
+import 'package:cityswitch_app/features/home/domain/entities/stors_entites.dart';
+import 'package:cityswitch_app/features/home/domain/usecases/search_store_use_case.dart';
+import 'package:cityswitch_app/features/my_store_details/domain/usecases/stores_by_user_Id_use_case.dart';
 import 'package:cityswitch_app/features/home/domain/usecases/featured_store_categories_use_case.dart';
+import 'package:cityswitch_app/features/my_store_details/presentation/manger/my_store_cubit/my_store_cubit.dart';
 import 'package:cityswitch_app/features/home/presentation/manger/select_category_cubit/select_category_cubit.dart';
+import 'package:cityswitch_app/features/market_details/presentation/manger/cubit/market_details_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nested/nested.dart';
 
+import '../features/add_store/presentation/manger/add_store/add_store_cubit.dart';
+import '../features/add_store/presentation/manger/keywords_cubit/keywords_cubit.dart';
 import '../features/auth/presentation/manger/auth_cubit/auth_cubit.dart';
-import '../features/home/presentation/manger/store_cubit/stors_cubit.dart';
 import '../features/home/presentation/manger/fetch_stores_categories_cubit/stores_categories_cubit.dart';
-import '../features/market_details/presentation/manger/cubit/market_details_cubit.dart';
+import '../features/home/presentation/manger/map_cubit/map_cubit.dart';
+import '../features/home/presentation/manger/store_cubit/stors_cubit.dart';
+import '../features/my_store_details/data/repositories/edit_my_store_repo_emp.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -38,7 +47,7 @@ List<SingleChildWidget> get providers {
     BlocProvider(
       create: (context) {
         return StorsCubit(
-          StoresByCategoreIdUseCase(mapsRepo: getIt.get<HomeRepoEmpl>()),
+          SearchStoresUseCase(homeRepo: getIt.get<HomeRepoEmpl>()),
         );
       },
     ),
@@ -57,14 +66,54 @@ List<SingleChildWidget> get providers {
         )..fetchStoresCategories();
       },
     ),
+
     BlocProvider(
       create: (context) {
-        return StoreFilterCubit();
+        return SelectCategoryDropDownCubit();
+      },
+    ),
+    BlocProvider(
+      create: (context) {
+        return AddStoreCubit(
+          AddStoreUseCase(addStoreRepo: getIt.get<AddStoreRepoEmpl>()),
+          FetchSearchAddressesUseCase(
+            addStoreRepo: getIt.get<AddStoreRepoEmpl>(),
+          ),
+        );
+      },
+    ),
+    BlocProvider(
+      create: (context) {
+        return KeywordsCubit();
+      },
+    ),
+    BlocProvider(
+      create: (context) {
+        return SelectedCategoryCubit();
+      },
+    ),
+    BlocProvider(
+      create: (context) {
+        return SelectSubCategoryDropDownCubit();
+      },
+    ),
+    BlocProvider(
+      create: (context) {
+        return MapCubit();
       },
     ),
     BlocProvider(
       create: (context) {
         return MarketDetailsCubit(StorsEntites());
+      },
+    ),
+    BlocProvider(
+      create: (context) {
+        return MyStoreCubit(
+          StoresByUserIdUseCase(
+            editMyStoreRepo: getIt.get<EditMyStoreRepoEmpl>(),
+          ),
+        )..fetchMyStoresByUserId();
       },
     ),
   ];

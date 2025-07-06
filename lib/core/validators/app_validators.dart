@@ -47,7 +47,7 @@ class AppValidators {
     messageCorrectEmail,
   );
 
-  static String? isName(String? value) => templateValidator(
+  static String? isNotEmpty(String? value) => templateValidator(
     value,
     !validators.isLength(value ?? '', 3, 20),
     messageEnterValue,

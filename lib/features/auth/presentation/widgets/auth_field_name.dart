@@ -13,7 +13,7 @@ class AuthFieldName extends StatelessWidget {
     return CustomTextForm(
       label: "Your Name",
       preIcon: Icons.person_rounded,
-      validator: AppValidators.isName,
+      validator: AppValidators.isNotEmpty,
       keyboardType: TextInputType.name,
       onSaved: cAuth.authModel.setName,
     );

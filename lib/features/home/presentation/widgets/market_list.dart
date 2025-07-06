@@ -64,7 +64,7 @@ class MarketList extends StatelessWidget {
                       crossAxisCount: 1, // عمودين
                       mainAxisSpacing: 8,
                       crossAxisSpacing: 8,
-                      childAspectRatio: 1.35, // تحكم في حجم البطاقة
+                      childAspectRatio: 1.90, // تحكم في حجم البطاقة
                     ),
                     itemBuilder: (context, index) {
                       return MarketCard(
@@ -75,7 +75,7 @@ class MarketList extends StatelessWidget {
                         distanceKm: 10,
                         rating: 4.5,
                         imageUrl:
-                            'https://th.bing.com/th/id/OIP.qUoUTC3LuSeJ-ASWcYUz5gHaEo?rs=1&pid=ImgDetMain',
+                            'http://192.168.0.80:3000/${state.stors.elementAt(index).images!.first}',
                         userName: 'Ahmed Amer',
                         isOpen: true,
                       );

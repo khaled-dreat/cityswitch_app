@@ -1,8 +1,9 @@
 import 'package:cityswitch_app/core/utils/routes/app_routes.dart';
-import 'package:cityswitch_app/features/home/domain/entities/maps_entites.dart';
+import 'package:cityswitch_app/features/home/domain/entities/stors_entites.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../test.dart';
 import '../../../market_details/presentation/manger/cubit/market_details_cubit.dart';
 import '../../../market_details/presentation/pages/market_details_view.dart';
 
@@ -38,7 +39,7 @@ class MarketCard extends StatelessWidget {
         context.read<MarketDetailsCubit>().selectedMarketDetails(
           storsEntites: storsEntites,
         );
-        AppRoutes.go(context, MarketDetailsView.nameRoute);
+        AppRoutes.go(context, MarketDetailsScreen.nameRoute);
       },
       child: Card(
         shape: RoundedRectangleBorder(
@@ -75,28 +76,9 @@ class MarketCard extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 8),
-                    //       Row(
-                    //         spacing: 6,
-                    //         children:
-                    //             jobTitles
-                    //                 .map(
-                    //                   (title) => Chip(
-                    //                     label: Text(title),
-                    //                     padding: EdgeInsets.all(0),
-                    //                   ),
-                    //                 )
-                    //                 .toList(),
-                    //       ),
+
                     SizedBox(height: 8),
-                    //   Row(
-                    //     children: [
-                    //       Icon(Icons.location_on, size: 16, color: Colors.green),
-                    //       SizedBox(width: 4),
-                    //       Expanded(
-                    //         child: Text(location, overflow: TextOverflow.ellipsis),
-                    //       ),
-                    //     ],
-                    //   ),
+
                     Row(
                       children: [
                         Icon(
@@ -122,34 +104,11 @@ class MarketCard extends StatelessWidget {
                               style: TextStyle(color: Colors.white),
                             ),
                           ),
-                      ],
-                    ),
-                    SizedBox(height: 6),
-                    Text(
-                      '$rating ★',
-                      style: TextStyle(color: Colors.orange[800]),
-                    ),
-                    Spacer(),
-                    Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 12,
-                          backgroundImage: NetworkImage(
-                            "https://randomuser.me/api/portraits/men/1.jpg",
-                          ),
+                        Spacer(),
+                        Text(
+                          '$rating ★',
+                          style: TextStyle(color: Colors.orange[800]),
                         ),
-                        SizedBox(width: 6),
-                        Expanded(
-                          child: Text(
-                            userName,
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        Icon(Icons.message_outlined),
-                        SizedBox(width: 8),
-                        Icon(Icons.share),
-                        SizedBox(width: 8),
-                        Icon(Icons.favorite_border),
                       ],
                     ),
                   ],

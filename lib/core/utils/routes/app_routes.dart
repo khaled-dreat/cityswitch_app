@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 
+import '../../../features/add_store/presentation/pages/add_store_view.dart';
 import '../../../features/auth/presentation/pages/register_view.dart';
 import '../../../features/auth/presentation/pages/sign_in_view.dart';
 import '../../../features/auth/presentation/pages/wrapper.dart';
+import '../../../features/choose_plan /presentation/pages/pricing_plans_screen.dart';
 import '../../../features/home/presentation/pages/home_view.dart';
 import '../../../features/market_details/presentation/pages/market_details_view.dart';
+import '../../../test.dart';
 
 class AppRoutes {
   // * Pages  App
@@ -12,8 +15,10 @@ class AppRoutes {
     SignInView.nameRoute: (context) => const SignInView(),
     RegisterView.nameRoute: (context) => const RegisterView(),
     HomeView.nameRoute: (context) => const HomeView(),
-    MarketDetailsView.nameRoute: (context) => const MarketDetailsView(),
+    MarketDetailsScreen.nameRoute: (context) => const MarketDetailsScreen(),
     Wrapper.nameRoute: (context) => const Wrapper(),
+    ChoosePlan.nameRoute: (context) => const ChoosePlan(),
+    AddStoreView.nameRoute: (context) => const AddStoreView(),
   };
 
   // * inti Route

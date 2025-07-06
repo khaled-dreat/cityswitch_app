@@ -1,6 +1,7 @@
 import 'package:cityswitch_app/app_start/app_start.dart';
 import 'package:cityswitch_app/core/setup_service_locator/setup_service_locator.dart';
 import 'package:cityswitch_app/features/auth/domain/entities/user_entites.dart';
+import 'package:cityswitch_app/features/home/domain/entities/stors_entites.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
@@ -16,7 +17,9 @@ Future<void> main() async {
   Hive.registerAdapter(UserEntitesAdapter());
   Hive.registerAdapter(UserDataAdapter());
   setupServiceLocatorHome();
-  setupServiceLocatorauth();
+  setupServiceLocatorMyStore();
+  setupServiceLocatorAuth();
+  setupServiceLocatorAddStore();
   await openHiveBoxes();
 
   Bloc.observer = SimpleBlocObserver();
@@ -26,4 +29,5 @@ Future<void> main() async {
 
 Future<void> openHiveBoxes() async {
   await Hive.openBox<UserEntites>(AppHiveKey.userBoxKey);
+  await Hive.openBox<StorsEntites>(AppHiveKey.storeBoxKey);
 }

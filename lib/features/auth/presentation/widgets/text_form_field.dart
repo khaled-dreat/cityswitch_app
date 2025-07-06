@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/utils/style/app_colers.dart';
-import '../manger/auth_cubit/auth_cubit.dart';
 
 class CustomTextForm extends StatefulWidget {
   const CustomTextForm({
@@ -52,8 +50,6 @@ class _CustomTextFormState extends State<CustomTextForm> {
 
   @override
   Widget build(BuildContext context) {
-    AuthCubit cAuth = BlocProvider.of<AuthCubit>(context);
-
     return TextFormField(
       focusNode: focusNode,
       initialValue: widget.initValue,

@@ -18,11 +18,11 @@ class StoresCategoriesFailure extends StoresCategoriesState {
 }
 
 class StoresCategoriesSuccess extends StoresCategoriesState {
-  final List<StoresCategoriesEntites> storesCategories;
+  final List<StorsCategoryEntites> storesCategories;
   const StoresCategoriesSuccess({required this.storesCategories});
 }
 
-class SelectedStoreCategore extends StoresCategoriesState {
-  final StoresCategoriesEntites storesCategories;
-  const SelectedStoreCategore({required this.storesCategories});
+class SelectedSupCategore extends StoresCategoriesState {
+  final StorsCategoryEntites storesCategories;
+  const SelectedSupCategore({required this.storesCategories});
 }

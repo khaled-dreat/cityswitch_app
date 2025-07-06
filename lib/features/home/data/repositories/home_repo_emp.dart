@@ -1,11 +1,13 @@
-import 'package:cityswitch_app/features/home/data/datasources/maps_remote_data_source.dart';
-import 'package:cityswitch_app/features/home/domain/entities/maps_entites.dart';
+import 'package:cityswitch_app/features/home/data/datasources/home_remote_data_source.dart';
+import 'package:cityswitch_app/features/home/domain/entities/stores_category_entites.dart';
+import 'package:cityswitch_app/features/home/domain/entities/stors_entites.dart';
 import 'package:cityswitch_app/core/utils/constant/app_failure.dart';
-import 'package:cityswitch_app/features/home/domain/entities/store_categories_entites.dart';
+
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 
 import '../../domain/repositories/maps_repo.dart';
+import '../models/search_store/m_search_parmeter.dart';
 
 class HomeRepoEmpl extends HomeRepo {
   final StoresRemoteDataSource homeRemoteDataSource;
@@ -13,12 +15,18 @@ class HomeRepoEmpl extends HomeRepo {
   HomeRepoEmpl({required this.homeRemoteDataSource});
 
   @override
-  Future<Either<Failure, List<StoresCategoriesEntites>>> fechCategore() async {
-    List<StoresCategoriesEntites> storsList;
+  Future<Either<Failure, List<StorsEntites>>> fechSearchstores({
+    SearchParmeterModel? searchParmeterModel,
+  }) async {
+    List<StorsEntites> storesList;
     try {
-      storsList = await homeRemoteDataSource.fechCategore();
+      storesList = await homeRemoteDataSource.fechSearchstores(
+        keyword: searchParmeterModel?.keyword,
+        category: searchParmeterModel?.category,
+        subCategory: searchParmeterModel?.subCategory,
+      );
 
-      return right(storsList);
+      return right(storesList);
     } catch (e) {
       if (e is DioException) {
         return left(ServerFailure.fromDiorError(e));
@@ -28,16 +36,12 @@ class HomeRepoEmpl extends HomeRepo {
   }
 
   @override
-  Future<Either<Failure, List<StorsEntites>>> fechstoresByCategoreId({
-    required String id,
-  }) async {
-    List<StorsEntites> storesCategoriesList;
+  Future<Either<Failure, List<StorsCategoryEntites>>> fechCategore() async {
+    List<StorsCategoryEntites> storsList;
     try {
-      storesCategoriesList = await homeRemoteDataSource.fechstoresByCategoreId(
-        id: id,
-      );
+      storsList = await homeRemoteDataSource.fechCategore();
 
-      return right(storesCategoriesList);
+      return right(storsList);
     } catch (e) {
       if (e is DioException) {
         return left(ServerFailure.fromDiorError(e));

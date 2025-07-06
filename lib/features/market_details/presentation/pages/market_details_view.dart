@@ -9,7 +9,7 @@ import 'package:location/location.dart';
 
 import '../../../../core/calculate_zoom_for_furthest_store/calculate_zoom_for_furthest_store.dart';
 import '../../../../core/utils/location_service/location_service.dart';
-import '../../../home/domain/entities/maps_entites.dart';
+import '../../../home/domain/entities/stors_entites.dart';
 import '../../../home/presentation/manger/select_category_cubit/select_category_cubit.dart';
 import '../../../home/presentation/manger/store_cubit/stors_cubit.dart';
 import '../widgets/custom_now_playing_card.dart';
@@ -247,15 +247,15 @@ class _MarketDetailsMapState extends State<MarketDetailsMap> {
     context.read<StorsCubit>().stream.listen((state) {
       if (state is StorsSuccess) {
         allStores = state.stors;
-        addStoreMarkers(context.read<StoreFilterCubit>().state);
+        //    addStoreMarkers(context.read<StoreFilterCubit>().state);
       }
     });
 
     // استمع لتغيير الفئة المحددة
-    context.read<StoreFilterCubit>().stream.listen((category) {
-      selectedCategory = category;
-      addStoreMarkers(category);
-    });
+    //  context.read<StoreFilterCubit>().stream.listen((category) {
+    //    selectedCategory = category;
+    //    addStoreMarkers(category);
+    //  });
   }
 
   @override

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cityswitch_app/core/utils/style/app_colers.dart';
 import 'package:cityswitch_app/features/auth/presentation/pages/sign_in_view.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/utils/routes/app_routes.dart';
 import '../../../../core/utils/widgets/toast/app_toast.dart';
+import '../../data/models/add_user_failure/m_add_user_failure.dart';
 import '../manger/auth_cubit/auth_cubit.dart';
 import '../widgets/auth_app_bar.dart';
 import '../widgets/auth_app_icon.dart';
@@ -87,13 +90,12 @@ class _RegisterViewState extends State<RegisterView> {
                         );
                         //       AppRoutes.goReplace(context, SignInView.nameRoute);
                       } else if (state is AddUserFailure) {
-                        // عرض رسالة الخطأ
                         AppToast.toast(state.errMessage);
                       } else {}
                     },
                     builder: (context, state) {
                       if (state is RegisterationLoading) {
-                        return CustomLoadingBtn();
+                        //     return CustomLoadingBtn();
                       }
                       return CustomBtn(
                         title: "Registeration",
