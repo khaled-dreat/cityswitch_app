@@ -4,6 +4,7 @@ class SearchStoreModel {
   LocationModel? location;
   String? id;
   String? name;
+  String? phoneNum;
   String? description;
   String? category;
   String? subCategory;
@@ -17,6 +18,7 @@ class SearchStoreModel {
 
   SearchStoreModel({
     this.location,
+    this.phoneNum,
     this.id,
     this.name,
     this.description,

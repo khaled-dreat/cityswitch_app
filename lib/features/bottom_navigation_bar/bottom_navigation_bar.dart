@@ -1,15 +1,20 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:flutter/material.dart';
+
 import 'package:cityswitch_app/features/add_store/presentation/pages/add_store_view.dart';
 import 'package:cityswitch_app/features/home/presentation/pages/home_view.dart';
-import 'package:flutter/material.dart';
 
 import '../../core/utils/style/app_colers.dart';
 import '../../test.dart';
+import '../../test2.dart';
 import '../add_store/presentation/widgets/custom_select_categories.dart';
 import '../my_messages/presentation/pages/my_messages.dart';
+import '../my_store_details/presentation/pages/edit_my_store_view.dart';
 import '../profile/presentation/pages/profile_view.dart';
 
 class CustomBottomNavigationBar extends StatefulWidget {
-  const CustomBottomNavigationBar({super.key});
+  final bool userHasStore;
+  const CustomBottomNavigationBar({super.key, required this.userHasStore});
 
   @override
   State<CustomBottomNavigationBar> createState() =>
@@ -19,13 +24,21 @@ class CustomBottomNavigationBar extends StatefulWidget {
 class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
   int _selectedIndex = 2;
 
-  // الصفحات التي ستظهر
-  final List<Widget> _pages = [
-    AddStoreView(),
-    ProfileView(),
-    HomeView(),
-    Container(),
-  ];
+  late final List<Widget> _pages;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _pages = [
+      widget.userHasStore
+          ? const EditMyStoreViewBody()
+          : const AddStoreViewBody(),
+      const ProfileView(),
+      const HomeView(),
+      Container(),
+    ];
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -37,33 +50,21 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: _pages[_selectedIndex],
+        body: IndexedStack(index: _selectedIndex, children: _pages),
         bottomNavigationBar: BottomNavigationBar(
-          selectedFontSize: 16,
-          selectedIconTheme: IconThemeData(size: 30),
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.add_business),
-              label: 'Add Store',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.account_circle),
-              label: 'Profile',
-            ),
+          currentIndex: _selectedIndex,
+          onTap: _onItemTapped,
+          selectedItemColor: AppColors.blue,
+          unselectedItemColor: AppColors.grey400,
+          items: const [
+            BottomNavigationBarItem(icon: Icon(Icons.store), label: 'My Store'),
+            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
             BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
             BottomNavigationBarItem(
               icon: Icon(Icons.message),
               label: 'Messages',
             ),
           ],
-          currentIndex: _selectedIndex,
-          unselectedItemColor: AppColors.grey400,
-          unselectedLabelStyle: TextStyle(
-            color: AppColors.grey400,
-            fontSize: 25,
-          ),
-          selectedItemColor: AppColors.blue,
-          onTap: _onItemTapped,
         ),
       ),
     );

@@ -26,7 +26,7 @@ class MarketList extends StatelessWidget {
               alignment: Alignment.center,
               height: MediaQuery.sizeOf(context).height * 0.39,
               child: Text(
-                "No Markets !!!",
+                "No Stores !!!",
                 style: AppTextStyle.h1Medium28(
                   context,
                 ).copyWith(color: AppColors.greenDark),
@@ -41,7 +41,7 @@ class MarketList extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(left: 8.0),
                   child: Text(
-                    'Markets',
+                    'Stores',
                     style: AppTextStyle.h2Regular24(
                       context,
                     ).copyWith(color: AppColors.greenDark),
@@ -50,7 +50,7 @@ class MarketList extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(left: 8.0, bottom: 8),
                   child: Text(
-                    'market ${state.stors.length}',
+                    'Store ${state.stors.length}',
                     style: AppTextStyle.h5Regular14(
                       context,
                     ).copyWith(color: AppColors.greenDark),

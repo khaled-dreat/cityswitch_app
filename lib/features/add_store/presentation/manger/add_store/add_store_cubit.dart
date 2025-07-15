@@ -39,24 +39,26 @@ class AddStoreCubit extends Cubit<AddStoreState> {
   }
 
   Future<void> fetchSearchAddresses({required String endPoint}) async {
-    var result = await fetchSearchAddressesUseCase.call(endPoint);
+    emit(AddStoreLoading());
 
-    result.fold(
-      (failure) {
-        emit(SearchAddressesFailure(errMessage: failure.message));
-        //  log();
-        //      log(name: "failure", failure.message);
-        //      AppValidators.updateMessagesFromErrors(failure.message);
+    // var result = await fetchSearchAddressesUseCase.call(endPoint);
 
-        //      emit(AddUserFailure(errMessage: failure.message));
-      },
-      (user) {
-        emit(SearchAddressesSuccess(searchAddressesModel: user));
-        log(user.length.toString());
-        // log(user.toJson().toString());
-        //    emit(RegisterationSuccess(user: user));
-      },
-    );
+    // result.fold(
+    //   (failure) {
+    //     emit(SearchAddressesFailure(errMessage: failure.message));
+    //     //  log();
+    //     //      log(name: "failure", failure.message);
+    //     //      AppValidators.updateMessagesFromErrors(failure.message);
+
+    //     //      emit(AddUserFailure(errMessage: failure.message));
+    //   },
+    //   (user) {
+    //     emit(SearchAddressesSuccess(searchAddressesModel: user));
+    //     log(user.length.toString());
+    //     // log(user.toJson().toString());
+    //     //    emit(RegisterationSuccess(user: user));
+    //   },
+    // );
   }
 
   Future<void> addStore({required BuildContext context}) async {

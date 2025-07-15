@@ -4,15 +4,16 @@ import 'package:dartz/dartz.dart';
 import '../../../../core/usecase/usecase.dart';
 import '../../../../core/utils/constant/app_failure.dart';
 import '../../../home/domain/entities/stors_entites.dart';
+import '../entities/my_data_store.dart';
 import '../repositories/edit_my_store_repo.dart';
 
-class StoresByUserIdUseCase extends UseCase<StorsEntites, String> {
+class StoresByUserIdUseCase extends UseCase<MyStoreEntite, String> {
   final EditMyStoreRepo editMyStoreRepo;
 
   StoresByUserIdUseCase({required this.editMyStoreRepo});
 
   @override
-  Future<Either<Failure, StorsEntites>> call([String? id]) async {
+  Future<Either<Failure, MyStoreEntite>> call([String? id]) async {
     return await editMyStoreRepo.fechMyStore(id: id!);
   }
 }

@@ -1,5 +1,6 @@
 import 'package:cityswitch_app/core/setup_service_locator/setup_service_locator.dart';
 import 'package:cityswitch_app/core/utils/routes/app_routes.dart';
+import 'package:cityswitch_app/core/utils/style/app_colers.dart';
 import 'package:cityswitch_app/features/add_store/data/repositories/add_store_repo_emp.dart';
 import 'package:cityswitch_app/features/add_store/domain/usecases/add_store%20_use_case.dart';
 import 'package:cityswitch_app/features/add_store/domain/usecases/fetch_search_addresses_use_case.dart';
@@ -9,6 +10,7 @@ import 'package:cityswitch_app/features/auth/domain/usecases/registeration_user_
 import 'package:cityswitch_app/features/home/data/repositories/home_repo_emp.dart';
 import 'package:cityswitch_app/features/home/domain/entities/stors_entites.dart';
 import 'package:cityswitch_app/features/home/domain/usecases/search_store_use_case.dart';
+import 'package:cityswitch_app/features/my_store_details/domain/usecases/edit_my_store%20_use_case.dart';
 import 'package:cityswitch_app/features/my_store_details/domain/usecases/stores_by_user_Id_use_case.dart';
 import 'package:cityswitch_app/features/home/domain/usecases/featured_store_categories_use_case.dart';
 import 'package:cityswitch_app/features/my_store_details/presentation/manger/my_store_cubit/my_store_cubit.dart';
@@ -25,6 +27,9 @@ import '../features/home/presentation/manger/fetch_stores_categories_cubit/store
 import '../features/home/presentation/manger/map_cubit/map_cubit.dart';
 import '../features/home/presentation/manger/store_cubit/stors_cubit.dart';
 import '../features/my_store_details/data/repositories/edit_my_store_repo_emp.dart';
+import '../features/my_store_details/presentation/manger/edit_my_store_cubit/edit_my_store_cubit.dart';
+import '../features/my_store_details/presentation/manger/edit_select_category_cubit/edit_select_category_cubit.dart';
+import '../features/my_store_details/presentation/manger/edit_keywords_cubit/edit_keywords_cubit.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -34,6 +39,12 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: providers,
       child: MaterialApp(
+        theme: ThemeData(
+          scaffoldBackgroundColor: AppColors.white,
+          navigationBarTheme: NavigationBarThemeData(
+            backgroundColor: AppColors.white,
+          ),
+        ),
         debugShowCheckedModeBanner: false,
         routes: AppRoutes.routes,
         initialRoute: AppRoutes.initRoute,
@@ -63,13 +74,18 @@ List<SingleChildWidget> get providers {
       create: (context) {
         return StoresCategoriesCubit(
           StoresCategoriesUseCase(homeRepo: getIt.get<HomeRepoEmpl>()),
-        )..fetchStoresCategories();
+        );
       },
     ),
 
     BlocProvider(
       create: (context) {
         return SelectCategoryDropDownCubit();
+      },
+    ),
+    BlocProvider(
+      create: (context) {
+        return EditSelectCategoryDropDownCubit();
       },
     ),
     BlocProvider(
@@ -99,7 +115,29 @@ List<SingleChildWidget> get providers {
     ),
     BlocProvider(
       create: (context) {
+        return EditKeywordsCubit();
+      },
+    ),
+    BlocProvider(
+      create: (context) {
+        return EditSelectedCategoryCubit();
+      },
+    ),
+    BlocProvider(
+      create: (context) {
+        return EditSelectSubCategoryDropDownCubit();
+      },
+    ),
+    BlocProvider(
+      create: (context) {
         return MapCubit();
+      },
+    ),
+    BlocProvider(
+      create: (context) {
+        return EditMyStoreCubit(
+          EditMyStoreUseCase(editMyStoreRepo: getIt.get<EditMyStoreRepoEmpl>()),
+        );
       },
     ),
     BlocProvider(
@@ -113,7 +151,7 @@ List<SingleChildWidget> get providers {
           StoresByUserIdUseCase(
             editMyStoreRepo: getIt.get<EditMyStoreRepoEmpl>(),
           ),
-        )..fetchMyStoresByUserId();
+        );
       },
     ),
   ];

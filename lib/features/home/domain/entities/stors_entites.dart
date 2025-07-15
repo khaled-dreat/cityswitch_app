@@ -1,24 +1,27 @@
 import '../../../add_store/data/models/add_store/location.dart';
 
 class StorsEntites {
-  String? name;
-  String? description;
-  String? category;
-  String? subCategory;
-  List<String>? tags;
-  List<String>? images;
-  LocationModel? location;
-  int? rating;
-  bool? active;
-  String? id;
-  DateTime? createdAt;
-  int? v;
+  final String? name;
+  final String? description;
+  final String? category;
+  final String? phoneNum;
+  final String? subCategory;
+  final List<String> tags;
+  final List<String>? images;
+  final LocationModel? location;
+  final int? rating;
+  final bool? active;
+  final String? id;
+  final DateTime? createdAt;
+  final int? v;
+
   StorsEntites({
     this.name,
     this.description,
     this.category,
+    this.phoneNum,
     this.subCategory,
-    this.tags,
+    List<String>? tags,
     this.images,
     this.location,
     this.rating,
@@ -26,5 +29,5 @@ class StorsEntites {
     this.id,
     this.createdAt,
     this.v,
-  });
+  }) : tags = tags ?? [];
 }

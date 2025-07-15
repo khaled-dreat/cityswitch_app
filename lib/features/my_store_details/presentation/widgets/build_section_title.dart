@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 
-class BuildSectionTitle extends StatelessWidget {
-  const BuildSectionTitle({super.key, required this.title, required this.icon});
+class EditBuildSectionTitle extends StatelessWidget {
+  const EditBuildSectionTitle({
+    super.key,
+    required this.title,
+    required this.icon,
+  });
   final String title;
 
   final IconData icon;

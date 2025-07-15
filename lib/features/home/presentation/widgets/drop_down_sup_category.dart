@@ -17,7 +17,7 @@ class DropDownSubCategory extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'الفئة الفرعية',
+                'Subcategory',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                 textDirection: TextDirection.rtl,
               ),
@@ -25,7 +25,7 @@ class DropDownSubCategory extends StatelessWidget {
               DropdownButtonFormField<String>(
                 value: context.watch<SelectSubCategoryDropDownCubit>().state,
                 hint: const Text(
-                  'اختر الفئة الفرعية',
+                  'subcategory',
                   textDirection: TextDirection.rtl,
                 ),
                 decoration: InputDecoration(

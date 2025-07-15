@@ -1,14 +1,11 @@
 import 'package:cityswitch_app/core/utils/constant/app_failure.dart';
-import 'package:cityswitch_app/features/add_store/data/datasources/add_store_remote_data_source.dart';
-import 'package:cityswitch_app/features/add_store/data/models/add_store/m_add_store.dart';
-import 'package:cityswitch_app/features/add_store/data/models/search_addresses/search_addresses.dart';
-import 'package:cityswitch_app/features/add_store/domain/entities/add_store.dart';
-import 'package:cityswitch_app/features/home/domain/entities/stors_entites.dart';
 import 'package:cityswitch_app/features/my_store_details/data/datasources/edit_my_store_remote_data_source.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-
+import '../../domain/entities/edit_my_store_entite.dart';
+import '../../domain/entities/my_data_store.dart';
 import '../../domain/repositories/edit_my_store_repo.dart';
+import '../models/edit_my_store_model/edit_my_store_model.dart';
 
 class EditMyStoreRepoEmpl extends EditMyStoreRepo {
   final EditMyStoreRemoteDataSource editMyStoreRemoteDataSource;
@@ -16,13 +13,13 @@ class EditMyStoreRepoEmpl extends EditMyStoreRepo {
   EditMyStoreRepoEmpl({required this.editMyStoreRemoteDataSource});
 
   @override
-  Future<Either<Failure, AddStoreModel>> editMyStore({
-    required AddStoreEntite addStoreModel,
+  Future<Either<Failure, EditMyStoreModel>> editMyStore({
+    required EditMyStoreEntite editMyStoreEntite,
   }) async {
-    AddStoreModel user;
+    EditMyStoreModel user;
     try {
       user = await editMyStoreRemoteDataSource.editMyStore(
-        addStoreEntite: addStoreModel,
+        editMyStoreEntite: editMyStoreEntite,
       );
 
       return right(user);
@@ -35,10 +32,10 @@ class EditMyStoreRepoEmpl extends EditMyStoreRepo {
   }
 
   @override
-  Future<Either<Failure, StorsEntites>> fechMyStore({
+  Future<Either<Failure, MyStoreEntite>> fechMyStore({
     required String id,
   }) async {
-    StorsEntites storsEntites;
+    MyStoreEntite storsEntites;
     try {
       storsEntites = await editMyStoreRemoteDataSource.fechMyStore(id: id);
 

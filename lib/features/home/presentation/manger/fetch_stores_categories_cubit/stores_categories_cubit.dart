@@ -13,7 +13,7 @@ class StoresCategoriesCubit extends Cubit<StoresCategoriesState> {
   StoresCategoriesCubit(this.storesCategoriesUseCase)
     : super(StoresCategoriesInitial());
   final StoresCategoriesUseCase storesCategoriesUseCase;
-  List<StorsCategoryEntites>? storesCategories;
+  List<StorsCategoryEntites>? getstoresCategories;
   Future<void> fetchStoresCategories() async {
     emit(StoresCategoriesLoading());
     var result = await storesCategoriesUseCase.call();
@@ -23,7 +23,7 @@ class StoresCategoriesCubit extends Cubit<StoresCategoriesState> {
       },
       (storesCategories) {
         emit(StoresCategoriesSuccess(storesCategories: storesCategories));
-        storesCategories = storesCategories;
+        getstoresCategories = storesCategories;
       },
     );
   }

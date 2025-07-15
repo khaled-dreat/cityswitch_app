@@ -29,5 +29,4 @@ Future<void> main() async {
 
 Future<void> openHiveBoxes() async {
   await Hive.openBox<UserEntites>(AppHiveKey.userBoxKey);
-  await Hive.openBox<StorsEntites>(AppHiveKey.storeBoxKey);
 }

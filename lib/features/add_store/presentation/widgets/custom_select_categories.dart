@@ -49,7 +49,7 @@ class _CustomSelectCategoriesState extends State<CustomSelectCategories> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        'الفئة الرئيسية',
+                        'Main category',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
@@ -61,7 +61,7 @@ class _CustomSelectCategoriesState extends State<CustomSelectCategories> {
                         value:
                             context.watch<SelectCategoryDropDownCubit>().state,
                         hint: const Text(
-                          'اختر الفئة الفرعية',
+                          'Select subcategory',
                           textDirection: TextDirection.rtl,
                         ),
                         decoration: InputDecoration(
@@ -121,7 +121,7 @@ class _CustomSelectCategoriesState extends State<CustomSelectCategories> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'الفئة الفرعية',
+                      'Subcategory',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
@@ -133,7 +133,7 @@ class _CustomSelectCategoriesState extends State<CustomSelectCategories> {
                       value:
                           context.watch<SelectSubCategoryDropDownCubit>().state,
                       hint: const Text(
-                        'اختر الفئة الفرعية',
+                        'Select subcategory',
                         textDirection: TextDirection.rtl,
                       ),
                       decoration: InputDecoration(
@@ -234,14 +234,6 @@ Container(
                 ],
               ),
             )*/
-
-
-
-
-
-
-
-
 
 /*
 

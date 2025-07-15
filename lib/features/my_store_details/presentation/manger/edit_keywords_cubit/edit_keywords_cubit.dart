@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class KeywordsCubit extends Cubit<List<String>> {
-  KeywordsCubit() : super([]);
+class EditKeywordsCubit extends Cubit<List<String>> {
+  EditKeywordsCubit() : super([]);
 
   void addKeyword(String keyword) {
     if (keyword.trim().isEmpty) return;

@@ -9,8 +9,10 @@ class CustomTextFieldAddStore extends StatelessWidget {
     this.keyboardType,
     this.validator,
     this.onSaved,
+    this.initialValue,
   });
   final String hintText;
+  final String? initialValue;
   final IconData? prefixIcon;
   final int? maxLines;
   final TextInputType? keyboardType;
@@ -35,7 +37,7 @@ class CustomTextFieldAddStore extends StatelessWidget {
       child: TextFormField(
         validator: validator,
         onSaved: onSaved,
-
+        initialValue: initialValue,
         maxLines: maxLines,
         keyboardType: keyboardType,
         style: const TextStyle(fontFamily: 'Arial Unicode MS'),

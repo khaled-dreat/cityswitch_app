@@ -36,7 +36,7 @@ class _SearchWithDropdownState extends State<SearchWithDropdown> {
                     icon: Icon(Icons.arrow_drop_down),
                     onChanged: (value) async {
                       //    //  await context.read<StorsCubit>().fetchStors();
-                    
+
                       context
                           .read<SelectCategoryDropDownCubit>()
                           .selectCategory(value!);

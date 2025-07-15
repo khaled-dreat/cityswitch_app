@@ -57,7 +57,7 @@ class _SearchWithCategoriesWidgetState
                   controller: _searchController,
                   textDirection: TextDirection.rtl,
                   decoration: InputDecoration(
-                    hintText: 'ابحث هنا...',
+                    hintText: 'Search here...',
                     hintTextDirection: TextDirection.rtl,
                     prefixIcon: const Icon(Icons.search),
                     border: OutlineInputBorder(
@@ -101,7 +101,7 @@ class _SearchWithCategoriesWidgetState
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: const Text('بحث'),
+                child: const Text('search'),
               ),
             ],
           ),

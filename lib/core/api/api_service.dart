@@ -5,6 +5,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 
 import '../../features/add_store/domain/entities/add_store.dart';
+import '../../features/my_store_details/domain/entities/edit_my_store_entite.dart';
 
 class ApiService {
   final Dio _dio;
@@ -17,6 +18,7 @@ class ApiService {
   final login = "auth/login";
   final myStoreByID = "stores/by-owner/";
   final addStore = "stores/addStore";
+  final editmyStore = "stores/update/by-owner/";
 
   ApiService(this._dio);
 
@@ -75,7 +77,6 @@ class ApiService {
       MapEntry('ownerId', addStoreEntite.ownerId!),
       if (addStoreEntite.tags != null)
         MapEntry('Tags', jsonEncode(addStoreEntite.tags)),
-
       if (addStoreEntite.location != null) ...[
         MapEntry(
           'location',
@@ -147,6 +148,24 @@ class ApiService {
       var response = await _dio.get(baseUrl + endPoint + id);
 
       return response.data;
+    } catch (e) {
+      //   log('Error during GET request: $e');
+      rethrow;
+    }
+  }
+
+  Future<dynamic> updateStore({
+    required EditMyStoreEntite editMyStoreEntite,
+  }) async {
+    try {
+      final data = editMyStoreEntite.toMap();
+      final response = await _dio.put(
+        '${baseUrl}$editmyStore${editMyStoreEntite.ownerId}',
+        data: data,
+        options: Options(headers: {'Content-Type': 'application/json'}),
+      );
+
+      return response;
     } catch (e) {
       //   log('Error during GET request: $e');
       rethrow;

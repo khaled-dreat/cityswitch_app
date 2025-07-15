@@ -1,16 +1,18 @@
 import 'dart:developer';
-
 import 'package:cityswitch_app/features/add_store/data/models/add_store/m_add_store.dart';
 import 'package:cityswitch_app/features/add_store/domain/entities/add_store.dart';
-
+import 'package:cityswitch_app/features/my_store_details/domain/entities/edit_my_store_entite.dart';
 import '../../../../../../core/api/api_service.dart';
-import '../../../home/data/models/stores/stores.dart';
-import '../../../home/domain/entities/stors_entites.dart';
+import '../../domain/entities/my_data_store.dart';
+import '../models/edit_my_store_model/edit_my_store_model.dart';
+import '../models/my_store_model/my_store_model.dart';
 import '../models/search_addresses/search_addresses.dart';
 
 abstract class EditMyStoreRemoteDataSource {
-  Future<AddStoreModel> editMyStore({required AddStoreEntite addStoreEntite});
-  Future<StorsEntites> fechMyStore({required String id});
+  Future<EditMyStoreModel> editMyStore({
+    required EditMyStoreEntite editMyStoreEntite,
+  });
+  Future<MyStoreEntite> fechMyStore({required String id});
 
   Future<List<SearchAddressesModel>> getSearchAddresses({
     required String endPoint,
@@ -23,14 +25,20 @@ class EditMyStoreRemoteDataSourceImp extends EditMyStoreRemoteDataSource {
   EditMyStoreRemoteDataSourceImp({required this.apiService});
 
   @override
-  Future<StorsEntites> fechMyStore({required String id}) async {
+  Future<MyStoreEntite> fechMyStore({required String id}) async {
     try {
       var data = await apiService.getByUserID(
         endPoint: apiService.myStoreByID,
         id: id,
       );
-      var store = StorsModel.fromJson(data);
-      return store;
+
+      if (data is List && data.isNotEmpty) {
+        var store = MyStoreModel.fromJson(data.first as Map<String, dynamic>);
+        log(store.toMap().toString());
+        return store;
+      } else {
+        throw Exception('No store data found or invalid format');
+      }
     } catch (e) {
       log('Error in fechStors: $e');
       rethrow;
@@ -38,17 +46,16 @@ class EditMyStoreRemoteDataSourceImp extends EditMyStoreRemoteDataSource {
   }
 
   @override
-  Future<AddStoreModel> editMyStore({
-    required AddStoreEntite addStoreEntite,
+  Future<EditMyStoreModel> editMyStore({
+    required EditMyStoreEntite editMyStoreEntite,
   }) async {
     try {
-      var data = await apiService.postAddStore(
-        endPoint: apiService.addStore,
-        addStoreEntite: addStoreEntite,
+      var data = await apiService.updateStore(
+        editMyStoreEntite: editMyStoreEntite,
       );
 
-      if (data.statusCode == 201) {
-        final store = AddStoreModel.fromJson(data.data);
+      if (data.statusMessage == "OK") {
+        final store = EditMyStoreModel.fromJson(data.data);
 
         return store;
       } else {

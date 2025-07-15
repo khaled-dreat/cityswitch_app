@@ -1,18 +1,18 @@
 import 'package:cityswitch_app/core/utils/style/app_colers.dart';
 import 'package:cityswitch_app/core/utils/style/app_text_style.dart';
-import 'package:cityswitch_app/features/add_store/presentation/widgets/custom_select_categories.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:io';
-
 import '../../../../../../core/validators/app_validators.dart';
-import '../manger/edit_my_store/edit_my_store_cubit.dart';
+import '../manger/edit_my_store_cubit/edit_my_store_cubit.dart';
+import '../manger/my_store_cubit/my_store_cubit.dart';
 import '../widgets/build_section_title.dart';
 import '../widgets/custom_submit_button.dart';
 import '../widgets/custom_text_field_add_store.dart';
+import '../widgets/edit_custom_select_categories.dart';
 import '../widgets/header_card_widget.dart';
-import '../widgets/keywords_section.dart';
-import '../widgets/store_images_upload.dart';
+import '../widgets/edit_keywords_section.dart';
+import '../widgets/edit_store_images_upload.dart';
 
 class EditMyStoreViewBody extends StatefulWidget {
   const EditMyStoreViewBody({super.key});
@@ -24,97 +24,121 @@ class EditMyStoreViewBody extends StatefulWidget {
 class _EditMyStoreViewBodyState extends State<EditMyStoreViewBody> {
   final _formKey = GlobalKey<FormState>();
   List<File> storeImages = [];
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    EditMyStoreCubit cAddStore = BlocProvider.of<EditMyStoreCubit>(context);
-    return Form(
-      key: _formKey,
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header Card
-            HeaderCardWidget(),
-            const SizedBox(height: 30),
+    EditMyStoreCubit cEditStore = BlocProvider.of<EditMyStoreCubit>(context);
+    return BlocBuilder<MyStoreCubit, MyStoreState>(
+      builder: (context, state) {
+        if (state is MyStoreSuccess) {
+          return Form(
+            key: _formKey,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header Card
+                  HeaderCardWidget(),
+                  const SizedBox(height: 30),
 
-            // Store Name
-            CustomTextFieldAddStore(
-              onSaved: cAddStore.addStoreEntite.setName,
-              validator: AppValidators.isNotEmpty,
-              hintText: 'Enter store name',
-              prefixIcon: Icons.store_outlined,
-            ),
-            const SizedBox(height: 25),
-            // Address
-            CustomTextFieldAddStore(
-              // onSaved: cAddStore.addStoreEntite.set,
-              hintText: 'Add zip code',
-              prefixIcon: Icons.location_on_outlined,
-              maxLines: 2,
-            ),
-            const SizedBox(height: 10),
+                  // Store Name
+                  CustomTextFieldAddStore(
+                    initialValue: "${state.myStore.name}",
+                    onSaved: cEditStore.editMyStoreEntite.setName,
+                    validator: AppValidators.isNotEmpty,
+                    hintText: 'Enter store name',
+                    prefixIcon: Icons.store_outlined,
+                  ),
+                  // const SizedBox(height: 25),
+                  // // Address
+                  // CustomTextFieldAddStore(
+                  //   // onSaved: cAddStore.addStoreEntite.set,
+                  //   hintText: 'Add zip code',
+                  //   prefixIcon: Icons.location_on_outlined,
+                  //   maxLines: 2,
+                  // ),
+                  // const SizedBox(height: 10),
 
-            Text(
-              "* Or you can leave it blank to record your location.",
-              style: AppTextStyle.h6Medium12(
-                context,
-              ).copyWith(color: AppColors.grey800),
-            ),
-            const SizedBox(height: 25),
-            // Phone Number
-            CustomTextFieldAddStore(
-              validator: AppValidators.isNotEmpty,
-              onSaved: cAddStore.addStoreEntite.setPhoneNum,
-              hintText: "Enter phone number",
-              prefixIcon: Icons.phone_outlined,
-              keyboardType: TextInputType.phone,
-            ),
-            const SizedBox(height: 25),
-            // Description
-            CustomTextFieldAddStore(
-              validator: AppValidators.isNotEmpty,
-              onSaved: cAddStore.addStoreEntite.setDescription,
-              hintText: 'Enter store description',
-              maxLines: 4,
-            ),
-            const SizedBox(height: 25),
-            // Store Images Widget
-            StoreImagesUploadWidget(
-              maxImages: 5,
-              onImagesChanged: (images) {
-                setState(() {
-                  storeImages = images;
-                });
-              },
-            ),
-            const SizedBox(height: 25),
-            CustomSelectCategories(),
-            const SizedBox(height: 25),
-            KeywordsSection(),
-            const SizedBox(height: 40),
-            // Submit Button
-            InkWell(
-              onTap: () async {
-                _formKey.currentState?.save();
-                await cAddStore.addStore(context: context);
-                if (_formKey.currentState?.validate() ?? false) {
-                  // ✅
-                  //  if ( != null) {
-                  //  } else {
-                  //    AppToast.toast(cAuth.errorMessage);
-                  //  }
-                }
-              },
+                  // Text(
+                  //   "* Or you can leave it blank to record your location.",
+                  //   style: AppTextStyle.h6Medium12(
+                  //     context,
+                  //   ).copyWith(color: AppColors.grey800),
+                  // ),
+                  const SizedBox(height: 25),
+                  // Phone Number
+                  CustomTextFieldAddStore(
+                    initialValue: "${state.myStore.phoneNum}",
+                    validator: AppValidators.isNotEmpty,
+                    onSaved: cEditStore.editMyStoreEntite.setPhoneNum,
+                    hintText: "Enter phone number ",
+                    prefixIcon: Icons.phone_outlined,
+                    keyboardType: TextInputType.phone,
+                  ),
+                  const SizedBox(height: 25),
+                  // Description
+                  CustomTextFieldAddStore(
+                    initialValue: "${state.myStore.description}",
+                    validator: AppValidators.isNotEmpty,
+                    onSaved: cEditStore.editMyStoreEntite.setDescription,
+                    hintText: 'Enter store description',
+                    maxLines: 4,
+                  ),
+                  const SizedBox(height: 25),
+                  BlocBuilder<MyStoreCubit, MyStoreState>(
+                    builder: (context, state) {
+                      if (state is MyStoreSuccess) {
+                        return ServerImagesDisplayWidget(
+                          baseUrl: "http://192.168.0.80:3000/",
+                          maxImages: 5,
+                          initialImages: state.myStore.images ?? [],
+                        );
+                      }
 
-              child: CustomSubmitButton(),
-            ),
+                      return const Center(child: CircularProgressIndicator());
+                    },
+                  ),
+                  const SizedBox(height: 25),
+                  EditBuildSectionTitle(
+                    title: 'Choose category',
+                    icon: Icons.tag,
+                  ),
+                  const SizedBox(height: 15),
+                  EditCustomSelectCategories(),
+                  const SizedBox(height: 25),
+                  KeywordsSection(),
+                  const SizedBox(height: 40),
+                  // Submit Button
+                  InkWell(
+                    onTap: () async {
+                      _formKey.currentState?.save();
+                      await cEditStore.editMyStore(context: context);
+                      if (_formKey.currentState?.validate() ?? false) {
+                        // ✅
+                        //  if ( != null) {
+                        //  } else {
+                        //    AppToast.toast(cAuth.errorMessage);
+                        //  }
+                      }
+                    },
 
-            const SizedBox(height: 20),
-          ],
-        ),
-      ),
+                    child: CustomSubmitButton(),
+                  ),
+
+                  const SizedBox(height: 20),
+                ],
+              ),
+            ),
+          );
+        }
+
+        return const Center(child: CircularProgressIndicator());
+      },
     );
   }
 }

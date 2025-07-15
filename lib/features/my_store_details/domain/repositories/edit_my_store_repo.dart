@@ -1,15 +1,14 @@
-import 'package:cityswitch_app/features/add_store/data/models/add_store/m_add_store.dart';
-import 'package:cityswitch_app/features/add_store/domain/entities/add_store.dart';
 import 'package:dartz/dartz.dart';
-
 import '../../../../../../core/utils/constant/app_failure.dart';
-import '../../../home/domain/entities/stors_entites.dart';
-import '../../data/models/search_addresses/search_addresses.dart';
+import '../../data/models/edit_my_store_model/edit_my_store_model.dart';
+import '../../data/models/my_store_model/my_store_model.dart';
+import '../entities/edit_my_store_entite.dart';
+import '../entities/my_data_store.dart';
 
 abstract class EditMyStoreRepo {
-  Future<Either<Failure, StorsEntites>> fechMyStore({required String id});
+  Future<Either<Failure, MyStoreEntite>> fechMyStore({required String id});
 
-  Future<Either<Failure, AddStoreModel>> editMyStore({
-    required AddStoreEntite addStoreModel,
+  Future<Either<Failure, EditMyStoreModel>> editMyStore({
+    required EditMyStoreEntite editMyStoreEntite,
   });
 }

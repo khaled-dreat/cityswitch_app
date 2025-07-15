@@ -18,7 +18,7 @@ final class MyStoreFailurel extends MyStoreState {
 }
 
 final class MyStoreSuccess extends MyStoreState {
-  final StorsEntites myStore;
+  final MyStoreEntite myStore;
 
   const MyStoreSuccess({required this.myStore});
 }

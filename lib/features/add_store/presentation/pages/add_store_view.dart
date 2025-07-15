@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cityswitch_app/core/utils/style/app_colers.dart';
 import 'package:cityswitch_app/core/utils/style/app_text_style.dart';
 import 'package:cityswitch_app/features/add_store/presentation/widgets/custom_select_categories.dart';
@@ -27,92 +29,104 @@ class _AddStoreViewBodyState extends State<AddStoreViewBody> {
 
   @override
   Widget build(BuildContext context) {
-    AddStoreCubit cAddStore = BlocProvider.of<AddStoreCubit>(context);
-    return Form(
-      key: _formKey,
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header Card
-            HeaderCardWidget(),
-            const SizedBox(height: 30),
+    final cAddStore = BlocProvider.of<AddStoreCubit>(context);
 
-            // Store Name
-            CustomTextFieldAddStore(
-              onSaved: cAddStore.addStoreEntite.setName,
-              validator: AppValidators.isNotEmpty,
-              hintText: 'Enter store name',
-              prefixIcon: Icons.store_outlined,
+    return BlocListener<AddStoreCubit, AddStoreState>(
+      listener: (context, state) {
+        if (state is AddStoreSuccess) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('✅ تم الحفظ بنجاح'),
+              backgroundColor: Colors.green,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              duration: const Duration(seconds: 2),
             ),
-            const SizedBox(height: 25),
-            // Address
-            CustomTextFieldAddStore(
-              // onSaved: cAddStore.addStoreEntite.set,
-              hintText: 'Add zip code',
-              prefixIcon: Icons.location_on_outlined,
-              maxLines: 2,
-            ),
-            const SizedBox(height: 10),
+          );
 
-            Text(
-              "* Or you can leave it blank to record your location.",
-              style: AppTextStyle.h6Medium12(
-                context,
-              ).copyWith(color: AppColors.grey800),
-            ),
-            const SizedBox(height: 25),
-            // Phone Number
-            CustomTextFieldAddStore(
-              validator: AppValidators.isNotEmpty,
-              onSaved: cAddStore.addStoreEntite.setPhoneNum,
-              hintText: "Enter phone number",
-              prefixIcon: Icons.phone_outlined,
-              keyboardType: TextInputType.phone,
-            ),
-            const SizedBox(height: 25),
-            // Description
-            CustomTextFieldAddStore(
-              validator: AppValidators.isNotEmpty,
-              onSaved: cAddStore.addStoreEntite.setDescription,
-              hintText: 'Enter store description',
-              maxLines: 4,
-            ),
-            const SizedBox(height: 25),
-            // Store Images Widget
-            StoreImagesUploadWidget(
-              maxImages: 5,
-              onImagesChanged: (images) {
-                setState(() {
-                  storeImages = images;
-                });
-              },
-            ),
-            const SizedBox(height: 25),
-            CustomSelectCategories(),
-            const SizedBox(height: 25),
-            KeywordsSection(),
-            const SizedBox(height: 40),
-            // Submit Button
-            InkWell(
-              onTap: () async {
-                _formKey.currentState?.save();
-                await cAddStore.addStore(context: context);
-                if (_formKey.currentState?.validate() ?? false) {
-                  // ✅
-                  //  if ( != null) {
-                  //  } else {
-                  //    AppToast.toast(cAuth.errorMessage);
-                  //  }
-                }
-              },
+          // يمكنك إعادة تعيين النموذج أو التنقل لصفحة أخرى إن أحببت:
+          // Navigator.pop(context);
+        }
 
-              child: CustomSubmitButton(),
+        if (state is AddStoreFailure) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('حدث خطأ: ${state.errMessage}'),
+              backgroundColor: Colors.red,
             ),
-
-            const SizedBox(height: 20),
-          ],
+          );
+        }
+      },
+      child: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              HeaderCardWidget(),
+              const SizedBox(height: 30),
+              CustomTextFieldAddStore(
+                onSaved: cAddStore.addStoreEntite.setName,
+                validator: AppValidators.isNotEmpty,
+                hintText: 'Enter store name',
+                prefixIcon: Icons.store_outlined,
+              ),
+              const SizedBox(height: 25),
+              CustomTextFieldAddStore(
+                hintText: 'Add zip code',
+                prefixIcon: Icons.location_on_outlined,
+                maxLines: 2,
+              ),
+              const SizedBox(height: 10),
+              Text(
+                "* Or you can leave it blank to record your location.",
+                style: AppTextStyle.h6Medium12(
+                  context,
+                ).copyWith(color: AppColors.grey800),
+              ),
+              const SizedBox(height: 25),
+              CustomTextFieldAddStore(
+                validator: AppValidators.isNotEmpty,
+                onSaved: cAddStore.addStoreEntite.setPhoneNum,
+                hintText: "Enter phone number",
+                prefixIcon: Icons.phone_outlined,
+                keyboardType: TextInputType.phone,
+              ),
+              const SizedBox(height: 25),
+              CustomTextFieldAddStore(
+                validator: AppValidators.isNotEmpty,
+                onSaved: cAddStore.addStoreEntite.setDescription,
+                hintText: 'Enter store description',
+                maxLines: 4,
+              ),
+              const SizedBox(height: 25),
+              StoreImagesUploadWidget(
+                maxImages: 5,
+                onImagesChanged: (images) {
+                  setState(() {
+                    storeImages = images;
+                  });
+                },
+              ),
+              const SizedBox(height: 25),
+              CustomSelectCategories(),
+              const SizedBox(height: 25),
+              KeywordsSection(),
+              const SizedBox(height: 40),
+              InkWell(
+                onTap: () async {
+                  _formKey.currentState?.save();
+                  await cAddStore.addStore(context: context);
+                  if (_formKey.currentState?.validate() ?? false) {}
+                },
+                child: CustomSubmitButton(),
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
         ),
       ),
     );

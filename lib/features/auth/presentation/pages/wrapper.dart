@@ -6,6 +6,8 @@ import 'package:cityswitch_app/features/auth/presentation/pages/sign_in_view.dar
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../bottom_navigation_bar/bottom_navigation_bar.dart';
+import '../../../home/presentation/manger/fetch_stores_categories_cubit/stores_categories_cubit.dart';
+import '../../../my_store_details/presentation/manger/my_store_cubit/my_store_cubit.dart';
 import '../manger/auth_cubit/auth_cubit.dart';
 
 class Wrapper extends StatelessWidget {
@@ -14,24 +16,24 @@ class Wrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    AuthCubit cAuth = BlocProvider.of<AuthCubit>(context, listen: false);
+    final myStoreCubit = BlocProvider.of<MyStoreCubit>(context, listen: false);
+    final storesCategoriesCubit = BlocProvider.of<StoresCategoriesCubit>(
+      context,
+      listen: false,
+    );
+    storesCategoriesCubit.fetchStoresCategories();
     return Scaffold(
-      body: BlocProvider(
-        create:
-            (_) =>
-                WrapperCubit(boxName: AppHiveKey.userBoxKey)..checkUserStatus(),
-        child: BlocBuilder<WrapperCubit, WrapperState>(
-          builder: (context, state) {
-            if (state is UserExists) {
-              return CustomBottomNavigationBar();
-            } else if (state is UserDoesNotExist) {
-              log("❌ لا يوجد مستخدم محفوظ");
-              return SignInView();
-            } else {
-              return CircularProgressIndicator();
-            }
-          },
-        ),
+      body: FutureBuilder(
+        future: myStoreCubit.fetchMyStoresByUserIdOnce(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final userHasStore = false; // true / false
+
+          return CustomBottomNavigationBar(userHasStore: userHasStore);
+        },
       ),
     );
   }

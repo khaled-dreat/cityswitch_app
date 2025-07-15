@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../manger/keywords_cubit/keywords_cubit.dart';
+import '../manger/edit_keywords_cubit/edit_keywords_cubit.dart';
 
-class BuildKeywordChip extends StatelessWidget {
-  const BuildKeywordChip({
+class EditBuildKeywordChip extends StatelessWidget {
+  const EditBuildKeywordChip({
     super.key,
     required this.keyword,
     required this.index,
@@ -62,7 +62,7 @@ class BuildKeywordChip extends StatelessWidget {
           const SizedBox(width: 6),
           GestureDetector(
             onTap: () {
-              context.read<KeywordsCubit>().removeKeyword(index);
+              context.read<EditKeywordsCubit>().removeKeyword(index);
               _showSnackBar(
                 context,
                 'The keyword has been removed.',

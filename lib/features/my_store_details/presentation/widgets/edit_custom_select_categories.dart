@@ -1,171 +1,219 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../home/domain/entities/stores_category_entites.dart';
 import '../../../home/presentation/manger/fetch_stores_categories_cubit/stores_categories_cubit.dart';
 import '../../../home/presentation/manger/select_category_cubit/select_category_cubit.dart';
-import '../manger/edit_my_store/edit_my_store_cubit.dart';
+import '../manger/edit_my_store_cubit/edit_my_store_cubit.dart';
+import '../manger/edit_select_category_cubit/edit_select_category_cubit.dart';
+import '../manger/my_store_cubit/my_store_cubit.dart';
 
-class CustomSelectCategories extends StatefulWidget {
+class EditCustomSelectCategories extends StatefulWidget {
   @override
-  _CustomSelectCategoriesState createState() => _CustomSelectCategoriesState();
+  _EdiCustomSelectCategoriesState createState() =>
+      _EdiCustomSelectCategoriesState();
 }
 
-class _CustomSelectCategoriesState extends State<CustomSelectCategories> {
+class _EdiCustomSelectCategoriesState
+    extends State<EditCustomSelectCategories> {
   @override
   Widget build(BuildContext context) {
-    EditMyStoreCubit cAddStore = BlocProvider.of(context);
+    EditMyStoreCubit cEditStore = BlocProvider.of(context);
 
-    return Padding(
-      padding: const EdgeInsets.all(0),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(15),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
-              spreadRadius: 2,
-              blurRadius: 10,
-              offset: const Offset(0, 3),
+    return BlocBuilder<MyStoreCubit, MyStoreState>(
+      builder: (context, state) {
+        if (state is MyStoreSuccess) {
+          final category = state.myStore.category;
+          final supCategory = state.myStore.subCategory;
+          final editSelectCategoryDropDownCubit =
+              context.read<EditSelectCategoryDropDownCubit>();
+          final editSelectSubCategoryDropDownCubit =
+              context.read<EditSelectSubCategoryDropDownCubit>();
+
+          // ترحيل البيانات مرة واحدة فقط
+          Future.microtask(
+            () => editSelectCategoryDropDownCubit.emit(category),
+          );
+          List<StorsCategoryEntites>? storesCategories =
+              context.read<StoresCategoriesCubit>().getstoresCategories;
+
+          Future.microtask(
+            () => editSelectSubCategoryDropDownCubit.emit(supCategory),
+          );
+
+          var editMyStoreEntite =
+              context.read<EditMyStoreCubit>().editMyStoreEntite;
+          editMyStoreEntite.category = category;
+          editMyStoreEntite.subCategory = supCategory;
+
+          context.read<EditSelectedCategoryCubit>().findSubCategoryById(
+            storesCategories!,
+            category!,
+          );
+        }
+        return Padding(
+          padding: const EdgeInsets.all(0),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.1),
+                  spreadRadius: 2,
+                  blurRadius: 10,
+                  offset: const Offset(0, 3),
+                ),
+              ],
             ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Category Dropdown
-            Text(
-              'Choose category:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10),
-            BlocBuilder<StoresCategoriesCubit, StoresCategoriesState>(
-              builder: (context, state) {
-                if (state is StoresCategoriesSuccess) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'الفئة الرئيسية',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                        ),
-                        textDirection: TextDirection.rtl,
-                      ),
-                      const SizedBox(height: 8),
-                      DropdownButtonFormField<String>(
-                        value:
-                            context.watch<SelectCategoryDropDownCubit>().state,
-                        hint: const Text(
-                          'اختر الفئة الفرعية',
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Category Dropdown
+                SizedBox(height: 10),
+                BlocBuilder<StoresCategoriesCubit, StoresCategoriesState>(
+                  builder: (context, state) {
+                    if (state is StoresCategoriesSuccess) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Main category',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                            textDirection: TextDirection.rtl,
+                          ),
+                          const SizedBox(height: 8),
+                          DropdownButtonFormField<String>(
+                            value:
+                                context
+                                    .watch<EditSelectCategoryDropDownCubit>()
+                                    .state,
+                            hint: const Text(
+                              'اختر الفئة الفرعية',
+                              textDirection: TextDirection.rtl,
+                            ),
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.grey.shade300,
+                                ),
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
+                            ),
+                            items:
+                                state.storesCategories.map((category) {
+                                  return DropdownMenuItem<String>(
+                                    value: category.id,
+                                    child: Text(category.name!),
+                                  );
+                                }).toList(),
+                            onChanged: (value) {
+                              cEditStore.editMyStoreEntite.category =
+                                  value.toString();
+                              cEditStore.editMyStoreEntite.subCategory = null;
+
+                              //   onCategorySelected(value);
+                              context
+                                  .read<EditSelectCategoryDropDownCubit>()
+                                  .selectCategory(value!);
+                              context
+                                  .read<EditSelectSubCategoryDropDownCubit>()
+                                  .selectCategory(
+                                    null,
+                                  ); // مسح قيمة الفئة الفرعية
+
+                              context
+                                  .read<EditSelectedCategoryCubit>()
+                                  .findSubCategoryById(
+                                    state.storesCategories,
+                                    value,
+                                  );
+                            },
+                          ),
+                        ],
+                      );
+                    }
+
+                    return const Center(child: CircularProgressIndicator());
+                  },
+                ),
+
+                SizedBox(height: 30),
+
+                // SubCategory Dropdown
+                Text(
+                  'Select subcategory:',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 10),
+                BlocBuilder<EditSelectedCategoryCubit, StorsCategoryEntites?>(
+                  builder: (context, state) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Subcategory',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
                           textDirection: TextDirection.rtl,
                         ),
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(color: Colors.grey.shade300),
+                        const SizedBox(height: 8),
+                        DropdownButtonFormField<String>(
+                          value:
+                              context
+                                  .watch<EditSelectSubCategoryDropDownCubit>()
+                                  .state,
+                          hint: const Text(
+                            'Select subcategory',
+                            textDirection: TextDirection.rtl,
                           ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                color: Colors.grey.shade300,
+                              ),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
                           ),
+                          items:
+                              state?.subCategories!.map((category) {
+                                return DropdownMenuItem<String>(
+                                  value: category.id,
+                                  child: Text(category.name!),
+                                );
+                              }).toList(),
+                          onChanged: (value) {
+                            //         onCategorySelected(value);
+                            cEditStore.editMyStoreEntite.subCategory =
+                                value.toString();
+                            context
+                                .read<EditSelectSubCategoryDropDownCubit>()
+                                .selectCategory(value!);
+                          },
                         ),
-                        items:
-                            state.storesCategories.map((category) {
-                              return DropdownMenuItem<String>(
-                                value: category.id,
-                                child: Text(category.name!),
-                              );
-                            }).toList(),
-                        onChanged: (value) {
-                          cAddStore.addStoreEntite.category = value.toString();
-                          //   onCategorySelected(value);
-                          context
-                              .read<SelectCategoryDropDownCubit>()
-                              .selectCategory(value!);
-                          context
-                              .read<SelectSubCategoryDropDownCubit>()
-                              .selectCategory(null); // مسح قيمة الفئة الفرعية
-
-                          context
-                              .read<SelectedCategoryCubit>()
-                              .findSubCategoryById(
-                                state.storesCategories,
-                                value,
-                              );
-                        },
-                      ),
-                    ],
-                  );
-                }
-
-                return const Center(child: CircularProgressIndicator());
-              },
+                      ],
+                    );
+                  },
+                ),
+              ],
             ),
-
-            SizedBox(height: 30),
-
-            // SubCategory Dropdown
-            Text(
-              'Select subcategory:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10),
-            BlocBuilder<SelectedCategoryCubit, StorsCategoryEntites?>(
-              builder: (context, state) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'الفئة الفرعية',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                      ),
-                      textDirection: TextDirection.rtl,
-                    ),
-                    const SizedBox(height: 8),
-                    DropdownButtonFormField<String>(
-                      value:
-                          context.watch<SelectSubCategoryDropDownCubit>().state,
-                      hint: const Text(
-                        'اختر الفئة الفرعية',
-                        textDirection: TextDirection.rtl,
-                      ),
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(color: Colors.grey.shade300),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
-                        ),
-                      ),
-                      items:
-                          state?.subCategories!.map((category) {
-                            return DropdownMenuItem<String>(
-                              value: category.id,
-                              child: Text(category.name!),
-                            );
-                          }).toList(),
-                      onChanged: (value) {
-                        //         onCategorySelected(value);
-                        cAddStore.addStoreEntite.subCategory = value.toString();
-                        context
-                            .read<SelectSubCategoryDropDownCubit>()
-                            .selectCategory(value!);
-                      },
-                    ),
-                  ],
-                );
-              },
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }
@@ -233,14 +281,6 @@ Container(
               ),
             )*/
 
-
-
-
-
-
-
-
-
 /*
 
 
@@ -256,12 +296,12 @@ import '../../../home/presentation/manger/fetch_stores_categories_cubit/stores_c
 import '../manger/add_store/add_store_cubit.dart';
 
 
-class CustomSelectCategories extends StatefulWidget {
+class EdiCustomSelectCategories extends StatefulWidget {
   @override
-  _CustomSelectCategoriesState createState() => _CustomSelectCategoriesState();
+  _EdiCustomSelectCategoriesState createState() => _EdiCustomSelectCategoriesState();
 }
 
-class _CustomSelectCategoriesState extends State<CustomSelectCategories> {
+class _EdiCustomSelectCategoriesState extends State<EdiCustomSelectCategories> {
   // المتغيرات لتخزين الاختيارات
   String? selectedCategoryId;
   String? selectedSubCategoryId;

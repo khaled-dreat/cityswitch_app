@@ -20,6 +20,7 @@ class AddStoreEntite {
     this.description,
     this.category,
     this.subCategory,
+    this.phoneNum,
     this.tags,
     this.ownerId,
     this.location,
@@ -43,8 +44,9 @@ class AddStoreEntite {
       'description': description,
       'category': category,
       'subCategory': subCategory,
-      'Tags': tags,
+      'Tags': jsonEncode(tags),
       'ownerId': ownerId,
+      'phoneNum': phoneNum,
       'location': location,
       // الصور لا تتحول إلى Map هنا لأنها ملفات
     };
