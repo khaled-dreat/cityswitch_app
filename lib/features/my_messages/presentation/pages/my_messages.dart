@@ -1,4 +1,14 @@
+import 'package:cityswitch_app/core/utils/routes/app_routes.dart';
+import 'package:cityswitch_app/features/my_messages/presentation/maneg/selected_chat/selected_chat_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
+
+import '../../../../core/user_session/user_session_app.dart';
+import '../../data/models/get_all_my_meesages_model/get_all_my_meesages_model.dart';
+import '../../data/models/get_all_my_meesages_model/message_model.dart';
+import '../maneg/chat_cubit/chat_cubit.dart';
+import '../widgets/build_message_bubble.dart';
 
 class Contact {
   final String name;
@@ -36,7 +46,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
   String? selectedContact;
   final List<Contact> contacts = [
     Contact(
-      name: 'Ahmed Mohamed',
+      name: 'khaled',
       lastMessage: 'Hi, how are you?',
       time: '10:30',
       avatar: '👨‍💼',
@@ -73,7 +83,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
   ];
 
   final Map<String, List<Message>> conversations = {
-    'Ahmed Mohamed': [
+    'khaled': [
       Message(text: 'Hi Ahmed', isMe: true, time: '10:25'),
       Message(text: 'Hi, how are you?', isMe: false, time: '10:30'),
       Message(
@@ -92,7 +102,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
-      body: selectedContact == null ? _buildContactsList() : _buildChatView(),
+      body: _buildContactsList(),
     );
   }
 
@@ -164,22 +174,31 @@ class _MessagesScreenState extends State<MessagesScreen> {
           ),
 
           // Contacts List
-          Expanded(
-            child: ListView.builder(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              itemCount: contacts.length,
-              itemBuilder: (context, index) {
-                final contact = contacts[index];
-                return _buildContactItem(contact);
-              },
-            ),
+          BlocBuilder<ChatCubit, ChatState>(
+            builder: (context, state) {
+              if (state is GetMyContactsSuccess) {
+                final contacts = state.getAllMyMeesagesModel;
+
+                return Expanded(
+                  child: ListView.builder(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    itemCount: contacts.length,
+                    itemBuilder: (context, index) {
+                      final contact = contacts.elementAt(index);
+                      return _buildContactItem(contact);
+                    },
+                  ),
+                );
+              }
+              return const Center(child: CircularProgressIndicator());
+            },
           ),
         ],
       ),
     );
   }
 
-  Widget _buildContactItem(Contact contact) {
+  Widget _buildContactItem(GetAllMyMeesagesModel contact) {
     return Container(
       margin: EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
@@ -195,10 +214,9 @@ class _MessagesScreenState extends State<MessagesScreen> {
       ),
       child: ListTile(
         contentPadding: EdgeInsets.all(16),
-        onTap: () {
-          setState(() {
-            selectedContact = contact.name;
-          });
+        onTap: () async {
+          context.read<SelectedChatCubit>().emit(contact);
+          AppRoutes.go(context, ChatView.nameRoute);
         },
         leading: Stack(
           children: [
@@ -214,10 +232,12 @@ class _MessagesScreenState extends State<MessagesScreen> {
                 borderRadius: BorderRadius.circular(25),
               ),
               child: Center(
-                child: Text(contact.avatar, style: TextStyle(fontSize: 24)),
+                child: Image.network(
+                  "http://192.168.0.80:3000/${contact.contactImage}",
+                ),
               ),
             ),
-            if (contact.isOnline)
+            if (false)
               Positioned(
                 bottom: 0,
                 right: 0,
@@ -234,7 +254,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
           ],
         ),
         title: Text(
-          contact.name,
+          contact.contactName!,
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 16,
@@ -244,7 +264,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
         subtitle: Padding(
           padding: EdgeInsets.only(top: 4),
           child: Text(
-            contact.lastMessage,
+            contact.lastMessage!,
             style: TextStyle(color: Colors.grey[600], fontSize: 14),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -255,10 +275,10 @@ class _MessagesScreenState extends State<MessagesScreen> {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Text(
-              contact.time,
+              formatCustomDate(contact.lastMessageTime.toString()),
               style: TextStyle(color: Colors.grey[500], fontSize: 12),
             ),
-            if (contact.unreadCount > 0)
+            if (contact.unreadCount! > 0)
               Container(
                 margin: EdgeInsets.only(top: 4),
                 padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -280,190 +300,165 @@ class _MessagesScreenState extends State<MessagesScreen> {
       ),
     );
   }
+}
 
-  Widget _buildChatView() {
-    final messages = conversations[selectedContact] ?? [];
+String formatCustomDate(String dateStr) {
+  final dateTime = DateTime.parse(dateStr).toLocal();
+  final now = DateTime.now();
+  final today = DateTime(now.year, now.month, now.day);
+  final tomorrow = today.add(Duration(days: 1));
+  final target = DateTime(dateTime.year, dateTime.month, dateTime.day);
 
-    return SafeArea(
-      child: Column(
-        children: [
-          // Chat Header
-          Container(
-            padding: EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                IconButton(
-                  onPressed: () {
-                    setState(() {
-                      selectedContact = null;
-                    });
-                  },
-                  icon: Icon(Icons.arrow_back, color: Colors.black87),
-                ),
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [Colors.blue[400]!, Colors.blue[600]!],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Center(
-                    child: Text(
-                      contacts
-                          .firstWhere((c) => c.name == selectedContact)
-                          .avatar,
-                      style: TextStyle(fontSize: 20),
-                    ),
-                  ),
-                ),
-                SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        selectedContact!,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          color: Colors.black87,
-                        ),
-                      ),
-                      Text(
-                        'Online now',
-                        style: TextStyle(color: Colors.green, fontSize: 12),
-                      ),
-                    ],
-                  ),
-                ),
-                IconButton(
-                  onPressed: () {},
-                  icon: Icon(Icons.videocam, color: Colors.grey[600]),
-                ),
-                IconButton(
-                  onPressed: () {},
-                  icon: Icon(Icons.call, color: Colors.grey[600]),
-                ),
-              ],
-            ),
-          ),
-
-          // Messages
-          Expanded(
-            child: ListView.builder(
-              padding: EdgeInsets.all(16),
-              itemCount: messages.length,
-              itemBuilder: (context, index) {
-                final message = messages[index];
-                return _buildMessageBubble(message);
-              },
-            ),
-          ),
-
-          // Message Input
-          Container(
-            padding: EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: Offset(0, -2),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    child: TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Write a letter...',
-                        border: InputBorder.none,
-                        hintStyle: TextStyle(color: Colors.grey[500]),
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(width: 8),
-                Container(
-                  padding: EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [Colors.blue[400]!, Colors.blue[600]!],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                  child: Icon(Icons.send, color: Colors.white, size: 20),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
+  if (target == today) {
+    // اليوم
+    return DateFormat('HH:mm').format(dateTime);
+  } else if (target == tomorrow) {
+    // غدًا
+    return 'Tomorrow';
+  } else {
+    // تاريخ فقط
+    return DateFormat('yyyy-MM-dd').format(dateTime);
   }
+}
 
-  Widget _buildMessageBubble(Message message) {
-    return Align(
-      alignment: message.isMe ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        margin: EdgeInsets.only(bottom: 12),
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: message.isMe ? Colors.blue[600] : Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(16),
-            topRight: Radius.circular(16),
-            bottomLeft: Radius.circular(message.isMe ? 16 : 4),
-            bottomRight: Radius.circular(message.isMe ? 4 : 16),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 5,
-              offset: Offset(0, 2),
-            ),
-          ],
-        ),
+class ChatView extends StatelessWidget {
+  const ChatView({super.key});
+  static const String nameRoute = "ChatView";
+  @override
+  Widget build(BuildContext context) {
+    final selectedChat = context.watch<SelectedChatCubit>().state;
+
+    return Scaffold(
+      body: SafeArea(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              message.text,
-              style: TextStyle(
-                color: message.isMe ? Colors.white : Colors.black87,
-                fontSize: 16,
+            // Chat Header
+            Container(
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: Icon(Icons.arrow_back, color: Colors.black87),
+                  ),
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Colors.blue[400]!, Colors.blue[600]!],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Center(
+                      child: Image.network(
+                        "http://192.168.0.80:3000/${selectedChat.contactImage}",
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          selectedChat.contactName.toString(),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        Text(
+                          'Online now',
+                          style: TextStyle(color: Colors.green, fontSize: 12),
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {},
+                    icon: Icon(Icons.videocam, color: Colors.grey[600]),
+                  ),
+                  IconButton(
+                    onPressed: () {},
+                    icon: Icon(Icons.call, color: Colors.grey[600]),
+                  ),
+                ],
               ),
             ),
-            SizedBox(height: 4),
-            Text(
-              message.time,
-              style: TextStyle(
-                color: message.isMe ? Colors.white70 : Colors.grey[500],
-                fontSize: 12,
+
+            // Messages
+            Expanded(
+              child: ListView.builder(
+                padding: EdgeInsets.all(16),
+                itemCount: selectedChat.messages!.length,
+                itemBuilder: (context, index) {
+                  final message = selectedChat.messages![index];
+                  return BuildMessageBubble(message: message);
+                },
+              ),
+            ),
+
+            // Message Input
+            Container(
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: Offset(0, -2),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[100],
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      child: TextField(
+                        decoration: InputDecoration(
+                          hintText: 'Write a letter...',
+                          border: InputBorder.none,
+                          hintStyle: TextStyle(color: Colors.grey[500]),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  Container(
+                    padding: EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Colors.blue[400]!, Colors.blue[600]!],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    child: Icon(Icons.send, color: Colors.white, size: 20),
+                  ),
+                ],
               ),
             ),
           ],

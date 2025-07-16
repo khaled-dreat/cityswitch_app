@@ -7,6 +7,7 @@ import '../../../features/auth/presentation/pages/wrapper.dart';
 import '../../../features/choose_plan /presentation/pages/pricing_plans_screen.dart';
 import '../../../features/home/presentation/pages/home_view.dart';
 import '../../../features/market_details/presentation/pages/market_details_view.dart';
+import '../../../features/my_messages/presentation/pages/my_messages.dart';
 import '../../../test.dart';
 
 class AppRoutes {
@@ -19,6 +20,7 @@ class AppRoutes {
     Wrapper.nameRoute: (context) => const Wrapper(),
     ChoosePlan.nameRoute: (context) => const ChoosePlan(),
     AddStoreView.nameRoute: (context) => const AddStoreView(),
+    ChatView.nameRoute: (context) => const ChatView(),
   };
 
   // * inti Route

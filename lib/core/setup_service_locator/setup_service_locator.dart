@@ -4,9 +4,11 @@ import 'package:cityswitch_app/features/auth/data/datasources/auth_user_remote_d
 import 'package:cityswitch_app/features/auth/data/repositories/auth_repo_emp.dart';
 import 'package:cityswitch_app/features/home/data/datasources/home_remote_data_source.dart';
 import 'package:cityswitch_app/features/home/data/repositories/home_repo_emp.dart';
+import 'package:cityswitch_app/features/my_messages/data/datasources/my_meesage_remote_data_source.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../features/my_messages/data/repositories/my_meesage_repo_emp.dart';
 import '../../features/my_store_details/data/datasources/edit_my_store_remote_data_source.dart';
 import '../../features/my_store_details/data/repositories/edit_my_store_repo_emp.dart';
 import '../api/api_service.dart';
@@ -38,6 +40,16 @@ void setupServiceLocatorAuth() {
   getIt.registerSingleton<AuthRepoEmpl>(
     AuthRepoEmpl(
       authRemoteDataSource: AuthDataSourceImp(
+        apiService: getIt.get<ApiService>(),
+      ),
+    ),
+  );
+}
+
+void setupServiceLocatorChat() {
+  getIt.registerSingleton<MyMeesageRepoEmp>(
+    MyMeesageRepoEmp(
+      myMeesageDataSourceImp: MyMeesageDataSourceImp(
         apiService: getIt.get<ApiService>(),
       ),
     ),

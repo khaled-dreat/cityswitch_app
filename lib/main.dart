@@ -8,6 +8,7 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'core/simple_bloc_observer/simple_bloc_observer.dart';
+import 'core/user_session/user_session_app.dart';
 import 'core/utils/local_data/app_local_data_key.dart';
 import 'features/auth/data/models/user_model/user_data.dart';
 
@@ -19,10 +20,12 @@ Future<void> main() async {
   setupServiceLocatorHome();
   setupServiceLocatorMyStore();
   setupServiceLocatorAuth();
+  setupServiceLocatorChat();
   setupServiceLocatorAddStore();
   await openHiveBoxes();
 
   Bloc.observer = SimpleBlocObserver();
+  await AppUserSession().init();
 
   runApp(const MyApp());
 }

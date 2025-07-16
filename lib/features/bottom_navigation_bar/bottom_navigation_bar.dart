@@ -36,7 +36,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
           : const AddStoreViewBody(),
       const ProfileView(),
       const HomeView(),
-      Container(),
+      MessagesScreen(),
     ];
   }
 

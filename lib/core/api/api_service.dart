@@ -5,6 +5,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 
 import '../../features/add_store/domain/entities/add_store.dart';
+import '../../features/my_messages/domain/entities/my_meesage_entitie.dart';
 import '../../features/my_store_details/domain/entities/edit_my_store_entite.dart';
 
 class ApiService {
@@ -19,8 +20,38 @@ class ApiService {
   final myStoreByID = "stores/by-owner/";
   final addStore = "stores/addStore";
   final editmyStore = "stores/update/by-owner/";
+  final sendMyMeesage = "chat/send";
+  final allMyMessages = "chat/conversations/";
 
   ApiService(this._dio);
+
+  Future<dynamic> getAllMyMessages({required String userId}) async {
+    try {
+      var response = await _dio.get(baseUrl + allMyMessages + userId);
+
+      return response;
+    } catch (e) {
+      //   log('Error during GET request: $e');
+      rethrow;
+    }
+  }
+
+  Future<dynamic> postMyMeesage({
+    required MyMeesageEntitie myMeesageEntitie,
+  }) async {
+    try {
+      var response = await _dio.post(
+        baseUrl + sendMyMeesage,
+        data: myMeesageEntitie.toMap(),
+        options: Options(headers: {'Content-Type': 'application/json'}),
+      );
+
+      return response.data;
+    } catch (e) {
+      //   log('Error during GET request: $e');
+      rethrow;
+    }
+  }
 
   Future<dynamic> searchStores({
     String? keyword,
