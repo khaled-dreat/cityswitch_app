@@ -1,68 +1,76 @@
 import 'dart:developer';
-import 'package:cityswitch_app/features/my_messages/data/models/get_all_my_meesages_model/get_all_my_meesages_model.dart';
-import 'package:cityswitch_app/features/my_messages/domain/entities/my_meesage_entitie.dart';
-import '../../../../core/api/api_service.dart';
-import '../models/my_meesage/my_meesage_model..dart';
+import 'package:cityswitch_app/features/my_messages/data/mappers/api_message_toentity_mapper.dart';
+import 'package:cityswitch_app/features/my_messages/data/mappers/conversation_model_mapper.dart';
+import 'package:cityswitch_app/features/my_messages/domain/entities/api_message_entity/api_message_entity.dart';
 
-abstract class MyMeesageRemoteDataSource {
-  Future<MyMeesageModel> sendMyMeesage({
-    required MyMeesageEntitie myMeesageEntitie,
+import '../../../../core/api/api_service.dart';
+import '../../domain/entities/my_conversation_entity/conversation_entity.dart';
+import '../../domain/entities/my_conversation_entity/message_entity.dart';
+import '../../domain/entities/send_message_entity/send_message_entity.dart';
+import '../models/api_message_model/api_message_model.dart';
+import '../models/my_conversation/my_conversation.dart';
+
+abstract class MessagesRemoteDataSource {
+  Future<List<MyConversationEntity>> fetchConversation({required String token});
+  Future<ApiMessageEntity> sendMessage({
+    required SendMessageEntity message,
+    required String token,
   });
-  Future<List<GetAllMyMeesagesModel>> getAllMyMessages({
-    required String userId,
-  });
+  Future<List<MessageEntity>> getUnreadMessages();
 }
 
-class MyMeesageDataSourceImp extends MyMeesageRemoteDataSource {
+class MessagesRemoteDataSourceImpl extends MessagesRemoteDataSource {
   final ApiService apiService;
 
-  MyMeesageDataSourceImp({required this.apiService});
-
+  MessagesRemoteDataSourceImpl({required this.apiService});
   @override
-  Future<MyMeesageModel> sendMyMeesage({
-    required MyMeesageEntitie myMeesageEntitie,
+  Future<List<MyConversationEntity>> fetchConversation({
+    required String token,
   }) async {
     try {
-      var data = await apiService.postMyMeesage(
-        myMeesageEntitie: myMeesageEntitie,
-      );
+      final response = await apiService.getAllMyMessages(token: token);
 
-      if (data.statusCode == 201) {
-        final store = MyMeesageModel.fromJson(data.data);
+      log('✅ response: ${response}');
+      log('✅ type: ${response.runtimeType}');
+      // ✅ هنا نمرّر كامل الـ Map
+      final model = MyConversationModel.fromJson(response);
 
-        return store;
-      } else {
-        throw Exception('Unexpected data format');
-      }
+      // ✅ تأكد أن toEntityList لا تعتمد على model.data.data
+
+      return model.toEntityList();
     } catch (e) {
-      log('Error in fechStors: $e');
+      log('❌ fetchConversation error: $e');
       rethrow;
     }
   }
 
   @override
-  Future<List<GetAllMyMeesagesModel>> getAllMyMessages({
-    required String userId,
+  Future<ApiMessageEntity> sendMessage({
+    required SendMessageEntity message,
+    required String token,
   }) async {
     try {
-      var response = await apiService.getAllMyMessages(userId: userId);
+      final response = await apiService.postMyMeesage(
+        sendMessageEntity: message,
+        token: token,
+      );
 
-      if (response.statusMessage == "OK") {
-        final messagesList =
-            (response.data as List)
-                .map(
-                  (item) => GetAllMyMeesagesModel.fromJson(
-                    item as Map<String, dynamic>,
-                  ),
-                )
-                .toList();
-
-        return messagesList;
-      } else {
-        throw Exception('Unexpected data format');
-      }
+      final model = ApiMessageModel.fromJson(response);
+      return model.toEntity();
     } catch (e) {
-      log('Error in fechStors: $e');
+      log('❌ sendMessage error: $e');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<MessageEntity>> getUnreadMessages() async {
+    try {
+      final response = await apiService.get(endPoint: 'api/messages/unread');
+      final List data = response['data'];
+      return data.map((e) => MessageEntity.fromJson(e)).toList();
+    } catch (e) {
+      log('❌ getUnreadMessages error: $e');
       rethrow;
     }
   }

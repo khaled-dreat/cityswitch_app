@@ -1,14 +1,15 @@
-import 'package:cityswitch_app/core/utils/routes/app_routes.dart';
-import 'package:cityswitch_app/features/my_messages/presentation/maneg/selected_chat/selected_chat_cubit.dart';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
+import 'package:cityswitch_app/core/utils/routes/app_routes.dart';
+import 'package:cityswitch_app/features/my_messages/presentation/maneg/selected_chat/selected_chat_cubit.dart';
+import 'package:cityswitch_app/features/my_messages/presentation/widgets/build_message_bubble.dart';
+
 import '../../../../core/user_session/user_session_app.dart';
-import '../../data/models/get_all_my_meesages_model/get_all_my_meesages_model.dart';
-import '../../data/models/get_all_my_meesages_model/message_model.dart';
-import '../maneg/chat_cubit/chat_cubit.dart';
-import '../widgets/build_message_bubble.dart';
+import '../../domain/entities/my_conversation_entity/conversation_entity.dart';
+import '../maneg/chat_cubit/messages_cubit.dart';
 
 class Contact {
   final String name;
@@ -97,6 +98,14 @@ class _MessagesScreenState extends State<MessagesScreen> {
       Message(text: 'Thank you for the help', isMe: false, time: '09:15'),
     ],
   };
+  @override
+  void initState() {
+    context.read<MessagesCubit>().connectSocket(
+      userId: AppUserSession().userId!,
+      token: AppUserSession().token!,
+    );
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -174,10 +183,10 @@ class _MessagesScreenState extends State<MessagesScreen> {
           ),
 
           // Contacts List
-          BlocBuilder<ChatCubit, ChatState>(
+          BlocBuilder<MessagesCubit, MessagesState>(
             builder: (context, state) {
-              if (state is GetMyContactsSuccess) {
-                final contacts = state.getAllMyMeesagesModel;
+              if (state is MessagesLoaded) {
+                final contacts = state.messages;
 
                 return Expanded(
                   child: ListView.builder(
@@ -198,7 +207,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
     );
   }
 
-  Widget _buildContactItem(GetAllMyMeesagesModel contact) {
+  Widget _buildContactItem(MyConversationEntity contact) {
     return Container(
       margin: EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
@@ -223,6 +232,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
             Container(
               width: 50,
               height: 50,
+              clipBehavior: Clip.antiAlias,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [Colors.blue[400]!, Colors.blue[600]!],
@@ -231,10 +241,11 @@ class _MessagesScreenState extends State<MessagesScreen> {
                 ),
                 borderRadius: BorderRadius.circular(25),
               ),
-              child: Center(
-                child: Image.network(
-                  "http://192.168.0.80:3000/${contact.contactImage}",
-                ),
+              child: Image.network(
+                "http://192.168.0.80:3000/${contact.otherUser!.profileImg}",
+                fit: BoxFit.fill,
+                errorBuilder:
+                    (context, error, stackTrace) => Icon(Icons.person),
               ),
             ),
             if (false)
@@ -254,7 +265,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
           ],
         ),
         title: Text(
-          contact.contactName!,
+          contact.otherUser!.name,
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 16,
@@ -264,7 +275,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
         subtitle: Padding(
           padding: EdgeInsets.only(top: 4),
           child: Text(
-            contact.lastMessage!,
+            contact.lastMessage!.text,
             style: TextStyle(color: Colors.grey[600], fontSize: 14),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -275,7 +286,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Text(
-              formatCustomDate(contact.lastMessageTime.toString()),
+              formatCustomDate(contact.lastMessage!.createdAt.toString()),
               style: TextStyle(color: Colors.grey[500], fontSize: 12),
             ),
             if (contact.unreadCount! > 0)
@@ -321,9 +332,48 @@ String formatCustomDate(String dateStr) {
   }
 }
 
-class ChatView extends StatelessWidget {
+class ChatView extends StatefulWidget {
   const ChatView({super.key});
   static const String nameRoute = "ChatView";
+
+  @override
+  State<ChatView> createState() => _ChatViewState();
+}
+
+class _ChatViewState extends State<ChatView> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    // التمرير للأسفل بعد بناء الواجهة
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollToBottom();
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final cMessages = context.read<MessagesCubit>();
+    final selectedChat = context.watch<SelectedChatCubit>().state;
+
+    // إرسال رسالة mark as read
+    cMessages.markMessageAsRead(selectedChat.lastMessage!.id);
+  }
+
+  void _scrollToBottom() {
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final selectedChat = context.watch<SelectedChatCubit>().state;
@@ -356,6 +406,7 @@ class ChatView extends StatelessWidget {
                   Container(
                     width: 40,
                     height: 40,
+                    clipBehavior: Clip.antiAlias,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [Colors.blue[400]!, Colors.blue[600]!],
@@ -364,19 +415,21 @@ class ChatView extends StatelessWidget {
                       ),
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: Center(
-                      child: Image.network(
-                        "http://192.168.0.80:3000/${selectedChat.contactImage}",
-                      ),
+                    child: Image.network(
+                      "http://192.168.0.80:3000/${selectedChat.otherUser!.profileImg}",
+                      fit: BoxFit.fill,
+                      errorBuilder:
+                          (context, error, stackTrace) => Icon(Icons.person),
                     ),
                   ),
+
                   SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          selectedChat.contactName.toString(),
+                          selectedChat.otherUser!.name.toString(),
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
@@ -384,7 +437,9 @@ class ChatView extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          'Online now',
+                          selectedChat.otherUser!.isOnline!
+                              ? 'Online now'
+                              : 'Offline',
                           style: TextStyle(color: Colors.green, fontSize: 12),
                         ),
                       ],
@@ -401,20 +456,36 @@ class ChatView extends StatelessWidget {
                 ],
               ),
             ),
-
-            // Messages
+            // 🟢 Messages list
             Expanded(
-              child: ListView.builder(
-                padding: EdgeInsets.all(16),
-                itemCount: selectedChat.messages!.length,
-                itemBuilder: (context, index) {
-                  final message = selectedChat.messages![index];
-                  return BuildMessageBubble(message: message);
+              child: BlocBuilder<MessagesCubit, MessagesState>(
+                builder: (context, state) {
+                  if (state is MessagesLoaded) {
+                    final selectedUserId =
+                        context.watch<SelectedChatCubit>().state.otherUser!.id;
+
+                    final updatedConversation = state.messages.firstWhere(
+                      (conv) => conv.otherUser!.id == selectedUserId,
+                      orElse: () => selectedChat,
+                    );
+
+                    return ListView.builder(
+                      controller: _scrollController,
+                      padding: EdgeInsets.all(16),
+                      itemCount: updatedConversation.lastMessages?.length ?? 0,
+                      itemBuilder: (context, index) {
+                        final message =
+                            updatedConversation.lastMessages![index];
+                        return BuildMessageBubble(message: message);
+                      },
+                    );
+                  }
+                  return Center(child: CircularProgressIndicator());
                 },
               ),
             ),
 
-            // Message Input
+            // Message input
             Container(
               padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -427,43 +498,101 @@ class ChatView extends StatelessWidget {
                   ),
                 ],
               ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[100],
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      child: TextField(
-                        decoration: InputDecoration(
-                          hintText: 'Write a letter...',
-                          border: InputBorder.none,
-                          hintStyle: TextStyle(color: Colors.grey[500]),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 8),
-                  Container(
-                    padding: EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Colors.blue[400]!, Colors.blue[600]!],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    child: Icon(Icons.send, color: Colors.white, size: 20),
-                  ),
-                ],
+              child: SendMeesageWidget(
+                receiverId: selectedChat.otherUser!.id,
+                onMessageSent: _scrollToBottom,
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class SendMeesageWidget extends StatefulWidget {
+  const SendMeesageWidget({
+    super.key,
+    required this.receiverId,
+    required this.onMessageSent,
+  });
+
+  final String receiverId;
+  final VoidCallback onMessageSent; // ✅ دالة يتم استدعاؤها بعد الإرسال
+
+  @override
+  State<SendMeesageWidget> createState() => _SendMeesageWidgetState();
+}
+
+class _SendMeesageWidgetState extends State<SendMeesageWidget> {
+  late TextEditingController controller;
+
+  @override
+  void initState() {
+    controller = TextEditingController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            decoration: BoxDecoration(
+              color: Colors.grey[100],
+              borderRadius: BorderRadius.circular(24),
+            ),
+            child: TextField(
+              controller: controller,
+              decoration: InputDecoration(
+                hintText: 'Write a letter...',
+                border: InputBorder.none,
+                hintStyle: TextStyle(color: Colors.grey[500]),
+              ),
+            ),
+          ),
+        ),
+        SizedBox(width: 8),
+        BlocListener<MessagesCubit, MessagesState>(
+          listener: (context, state) {
+            if (state is MessagesLoaded) {
+              controller.clear(); // تنظيف الحقل
+              widget.onMessageSent(); // ✅ التمرير لأسفل بعد الإرسال
+              setState(() {});
+            }
+          },
+          child: InkWell(
+            onTap: () {
+              if (controller.text.isNotEmpty) {
+                context.read<MessagesCubit>().sendMessage(
+                  text: controller.text,
+                  receiverId: widget.receiverId,
+                );
+              }
+            },
+            child: Container(
+              padding: EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.blue[400]!, Colors.blue[600]!],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: Icon(Icons.send, color: Colors.white, size: 20),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

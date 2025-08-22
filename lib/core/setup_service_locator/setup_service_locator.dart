@@ -8,10 +8,11 @@ import 'package:cityswitch_app/features/my_messages/data/datasources/my_meesage_
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 
-import '../../features/my_messages/data/repositories/my_meesage_repo_emp.dart';
+import '../../features/my_messages/data/repositories/message_repository_impl.dart';
 import '../../features/my_store_details/data/datasources/edit_my_store_remote_data_source.dart';
 import '../../features/my_store_details/data/repositories/edit_my_store_repo_emp.dart';
 import '../api/api_service.dart';
+import '../services/socket_service/socket_service.dart';
 
 final getIt = GetIt.instance;
 
@@ -47,11 +48,22 @@ void setupServiceLocatorAuth() {
 }
 
 void setupServiceLocatorChat() {
-  getIt.registerSingleton<MyMeesageRepoEmp>(
-    MyMeesageRepoEmp(
-      myMeesageDataSourceImp: MyMeesageDataSourceImp(
-        apiService: getIt.get<ApiService>(),
-      ),
+  // تسجيل ApiService أولًا (تأكد أنه موجود)
+  final apiService = getIt.get<ApiService>();
+
+  // ➊ تسجيل SocketService كمزود Singleton
+  getIt.registerSingleton<SocketService>(
+    SocketService(), // سيتم إعادة تهيئته لاحقًا
+  );
+
+  // ➋ تسجيل MessagesRemoteDataSource
+  final remoteDataSource = MessagesRemoteDataSourceImpl(apiService: apiService);
+
+  // ➌ تسجيل MessageRepositoryImpl
+  getIt.registerSingleton<MessageRepositoryImpl>(
+    MessageRepositoryImpl(
+      remoteDataSource: remoteDataSource,
+      socketService: getIt.get<SocketService>(),
     ),
   );
 }

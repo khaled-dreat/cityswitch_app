@@ -1,4 +1,4 @@
-class MessageModel {
+class LastMessage {
   String? id;
   String? sender;
   String? receiver;
@@ -7,9 +7,8 @@ class MessageModel {
   DateTime? createdAt;
   DateTime? updatedAt;
   int? v;
-  List<String>? participants;
 
-  MessageModel({
+  LastMessage({
     this.id,
     this.sender,
     this.receiver,
@@ -18,10 +17,9 @@ class MessageModel {
     this.createdAt,
     this.updatedAt,
     this.v,
-    this.participants,
   });
 
-  factory MessageModel.fromJson(Map<String, dynamic> json) => MessageModel(
+  factory LastMessage.fromJson(Map<String, dynamic> json) => LastMessage(
     id: json['_id'] as String?,
     sender: json['sender'] as String?,
     receiver: json['receiver'] as String?,
@@ -36,7 +34,6 @@ class MessageModel {
             ? null
             : DateTime.parse(json['updatedAt'] as String),
     v: json['__v'] as int?,
-    participants: (json['participants'] as List<dynamic>?)?.cast<String>(),
   );
 
   Map<String, dynamic> toJson() => {
@@ -48,6 +45,5 @@ class MessageModel {
     'createdAt': createdAt?.toIso8601String(),
     'updatedAt': updatedAt?.toIso8601String(),
     '__v': v,
-    'participants': participants,
   };
 }

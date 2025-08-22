@@ -3,7 +3,7 @@ import 'package:cityswitch_app/core/utils/local_data/app_local_data_key.dart';
 import 'package:cityswitch_app/features/auth/presentation/manger/wrapper_cubit/wrapper_cubit.dart';
 import 'package:cityswitch_app/features/auth/presentation/manger/wrapper_cubit/wrapper_state.dart';
 import 'package:cityswitch_app/features/auth/presentation/pages/sign_in_view.dart';
-import 'package:cityswitch_app/features/my_messages/presentation/maneg/chat_cubit/chat_cubit.dart';
+import 'package:cityswitch_app/features/my_messages/presentation/maneg/chat_cubit/messages_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../bottom_navigation_bar/bottom_navigation_bar.dart';
@@ -27,8 +27,8 @@ class _WrapperState extends State<Wrapper> {
         context,
         listen: false,
       );
-      final chatCubit = BlocProvider.of<ChatCubit>(context, listen: false);
-      chatCubit.getMyContacts();
+      // final chatCubit = BlocProvider.of<ChatCubit>(context, listen: false);
+      // chatCubit.getMyContacts();
       storesCategoriesCubit.fetchStoresCategories();
     });
     super.initState();

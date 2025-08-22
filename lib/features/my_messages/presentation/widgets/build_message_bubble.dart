@@ -4,11 +4,12 @@ import 'package:flutter/services.dart' show TextDirection;
 import 'package:intl/intl.dart' show DateFormat;
 
 import '../../../../core/user_session/user_session_app.dart';
-import '../../data/models/get_all_my_meesages_model/message_model.dart';
+import '../../domain/entities/my_conversation_entity/conversation_entity.dart';
+import '../../domain/entities/my_conversation_entity/message_entity.dart';
 
 class BuildMessageBubble extends StatefulWidget {
   const BuildMessageBubble({super.key, required this.message});
-  final MessageModel message;
+  final MessageEntity message;
 
   @override
   State<BuildMessageBubble> createState() => _BuildMessageBubbleState();
@@ -50,18 +51,37 @@ class _BuildMessageBubbleState extends State<BuildMessageBubble> {
             crossAxisAlignment:
                 isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
             children: [
-              // النص مع إمكانية التوسع
               _buildExpandableText(isMe),
               SizedBox(height: 8),
-              // الوقت
-              Text(
-                DateFormat(
-                  'HH:mm',
-                ).format(widget.message.createdAt!).toString(),
-                style: TextStyle(
-                  color: isMe ? Colors.white70 : Colors.grey[500],
-                  fontSize: 12,
-                ),
+              Row(
+                mainAxisAlignment:
+                    isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    DateFormat(
+                      'HH:mm',
+                    ).format(widget.message.createdAt).toString(),
+                    style: TextStyle(
+                      color: isMe ? Colors.white70 : Colors.grey[500],
+                      fontSize: 12,
+                    ),
+                  ),
+                  if (isMe) ...[
+                    SizedBox(width: 6),
+                    Icon(
+                      widget.message.isRead
+                          ? Icons
+                              .done_all // ✅ صحين
+                          : Icons.done, // ✅ صح واحد
+                      size: 16,
+                      color:
+                          widget.message.isRead
+                              ? Colors.lightGreenAccent[100]
+                              : Colors.white70,
+                    ),
+                  ],
+                ],
               ),
             ],
           ),

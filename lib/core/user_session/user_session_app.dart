@@ -11,11 +11,14 @@ class AppUserSession {
   AppUserSession._internal();
 
   String? _userId;
+  String? _token;
 
   Future<void> init() async {
     final box = Hive.box<UserEntites>(AppHiveKey.userBoxKey);
     _userId = box.isNotEmpty ? box.values.first.data?.id : null;
+    _token = box.isNotEmpty ? box.values.first.token : null;
   }
 
   String? get userId => _userId;
+  String? get token => _token;
 }

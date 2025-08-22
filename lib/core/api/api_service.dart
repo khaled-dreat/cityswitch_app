@@ -5,7 +5,8 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 
 import '../../features/add_store/domain/entities/add_store.dart';
-import '../../features/my_messages/domain/entities/my_meesage_entitie.dart';
+import '../../features/my_messages/domain/entities/my_conversation_entity/message_entity.dart';
+import '../../features/my_messages/domain/entities/send_message_entity/send_message_entity.dart';
 import '../../features/my_store_details/domain/entities/edit_my_store_entite.dart';
 
 class ApiService {
@@ -20,35 +21,70 @@ class ApiService {
   final myStoreByID = "stores/by-owner/";
   final addStore = "stores/addStore";
   final editmyStore = "stores/update/by-owner/";
-  final sendMyMeesage = "chat/send";
-  final allMyMessages = "chat/conversations/";
+  final sendMyMeesage = "api/messages/send";
+  final allMyMessages = "api/messages/conversations";
 
   ApiService(this._dio);
 
-  Future<dynamic> getAllMyMessages({required String userId}) async {
+  Future<dynamic> getAllMyMessages({required String token}) async {
     try {
-      var response = await _dio.get(baseUrl + allMyMessages + userId);
+      final response = await _dio.get(
+        baseUrl + allMyMessages,
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+      log(response.data.toString());
+      return response.data;
+    } catch (e) {
+      rethrow;
+    }
+  }
 
-      return response;
+  Future<dynamic> getChatbyReceiverId({
+    required String token,
+    required String receiverId,
+  }) async {
+    try {
+      final response = await _dio.get(
+        baseUrl + allMyMessages + receiverId,
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+      log(response.data.toString());
+      return response.data;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<dynamic> postMyMeesage({
+    required SendMessageEntity sendMessageEntity,
+    required String token,
+  }) async {
+    try {
+      var response = await _dio.post(
+        baseUrl + sendMyMeesage,
+        data: sendMessageEntity.toJson(),
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      return response.data;
     } catch (e) {
       //   log('Error during GET request: $e');
       rethrow;
     }
   }
 
-  Future<dynamic> postMyMeesage({
-    required MyMeesageEntitie myMeesageEntitie,
+  Future<dynamic> put({
+    required String endPoint,
+    required Map<String, dynamic> data,
   }) async {
     try {
-      var response = await _dio.post(
-        baseUrl + sendMyMeesage,
-        data: myMeesageEntitie.toMap(),
+      final response = await _dio.put(
+        baseUrl + endPoint,
+        data: data,
         options: Options(headers: {'Content-Type': 'application/json'}),
       );
-
       return response.data;
     } catch (e) {
-      //   log('Error during GET request: $e');
       rethrow;
     }
   }

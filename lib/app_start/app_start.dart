@@ -10,9 +10,15 @@ import 'package:cityswitch_app/features/auth/domain/usecases/registeration_user_
 import 'package:cityswitch_app/features/home/data/repositories/home_repo_emp.dart';
 import 'package:cityswitch_app/features/home/domain/entities/stors_entites.dart';
 import 'package:cityswitch_app/features/home/domain/usecases/search_store_use_case.dart';
-import 'package:cityswitch_app/features/my_messages/data/models/get_all_my_meesages_model/get_all_my_meesages_model.dart';
-import 'package:cityswitch_app/features/my_messages/data/repositories/my_meesage_repo_emp.dart';
-import 'package:cityswitch_app/features/my_messages/presentation/maneg/chat_cubit/chat_cubit.dart';
+import 'package:cityswitch_app/features/my_messages/data/repositories/message_repository_impl.dart';
+import 'package:cityswitch_app/features/my_messages/domain/repositories/my_meesage_repo.dart';
+import 'package:cityswitch_app/features/my_messages/domain/usecases/connect_socket_usecase.dart';
+import 'package:cityswitch_app/features/my_messages/domain/usecases/disconnect_socket_usecase.dart';
+import 'package:cityswitch_app/features/my_messages/domain/usecases/initialize_socket_usecase.dart';
+import 'package:cityswitch_app/features/my_messages/domain/usecases/listen_to_messages_usecase.dart';
+import 'package:cityswitch_app/features/my_messages/domain/usecases/mark_message_as_read_usecase.dart';
+import 'package:cityswitch_app/features/my_messages/domain/usecases/send_message_socket_usecase.dart';
+import 'package:cityswitch_app/features/my_messages/presentation/maneg/chat_cubit/messages_cubit.dart';
 import 'package:cityswitch_app/features/my_store_details/domain/usecases/edit_my_store%20_use_case.dart';
 import 'package:cityswitch_app/features/my_store_details/domain/usecases/stores_by_user_Id_use_case.dart';
 import 'package:cityswitch_app/features/home/domain/usecases/featured_store_categories_use_case.dart';
@@ -23,13 +29,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nested/nested.dart';
 
+import '../core/services/socket_service/socket_service.dart';
 import '../features/add_store/presentation/manger/add_store/add_store_cubit.dart';
 import '../features/add_store/presentation/manger/keywords_cubit/keywords_cubit.dart';
 import '../features/auth/presentation/manger/auth_cubit/auth_cubit.dart';
 import '../features/home/presentation/manger/fetch_stores_categories_cubit/stores_categories_cubit.dart';
 import '../features/home/presentation/manger/map_cubit/map_cubit.dart';
 import '../features/home/presentation/manger/store_cubit/stors_cubit.dart';
-import '../features/my_messages/domain/usecases/get_all_my_meesage_use_case.dart';
+import '../features/my_messages/domain/entities/my_conversation_entity/conversation_entity.dart';
+import '../features/my_messages/domain/usecases/get_conversation_usecase.dart';
+import '../features/my_messages/domain/usecases/send_message_usecase.dart';
 import '../features/my_messages/presentation/maneg/selected_chat/selected_chat_cubit.dart';
 import '../features/my_store_details/data/repositories/edit_my_store_repo_emp.dart';
 import '../features/my_store_details/presentation/manger/edit_my_store_cubit/edit_my_store_cubit.dart';
@@ -152,7 +161,7 @@ List<SingleChildWidget> get providers {
     ),
     BlocProvider(
       create: (context) {
-        return SelectedChatCubit(GetAllMyMeesagesModel());
+        return SelectedChatCubit(MyConversationEntity());
       },
     ),
     BlocProvider(
@@ -166,8 +175,31 @@ List<SingleChildWidget> get providers {
     ),
     BlocProvider(
       create: (context) {
-        return ChatCubit(
-          GetAllMyMeesagesUseCase(myMeesageRepo: getIt.get<MyMeesageRepoEmp>()),
+        return MessagesCubit(
+          connectSocketUseCase: ConnectSocketUseCase(
+            getIt.get<SocketService>(),
+          ),
+          disconnectSocketUsecase: DisconnectSocketUsecase(
+            getIt.get<SocketService>(),
+          ),
+          initializeSocketListenerUseCase: InitializeSocketListenerUseCase(
+            getIt.get<SocketService>(),
+          ),
+          listenToMessagesUseCase: ListenToMessagesUseCase(
+            getIt.get<SocketService>(),
+          ),
+          markMessageAsReadUsecase: MarkMessageAsReadUsecase(
+            socketService: getIt.get<SocketService>(),
+          ),
+          sendMessageSocketUsecase: SendMessageSocketUsecase(
+            repository: getIt.get<MessageRepositoryImpl>(),
+          ),
+          sendMessageUseCase: SendMessageUseCase(
+            repository: getIt.get<MessageRepositoryImpl>(),
+          ),
+          getConversationUseCase: GetConversationUseCase(
+            repository: getIt.get<MessageRepositoryImpl>(),
+          ),
         );
       },
     ),

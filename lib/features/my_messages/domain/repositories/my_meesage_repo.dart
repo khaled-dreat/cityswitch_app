@@ -1,15 +1,20 @@
-import 'package:dartz/dartz.dart';
-import '../../../../core/utils/constant/app_failure.dart';
-import '../../data/models/get_all_my_meesages_model/get_all_my_meesages_model.dart';
-import '../../data/models/my_meesage/my_meesage_model..dart';
-import '../entities/my_meesage_entitie.dart';
+import 'package:cityswitch_app/features/my_messages/domain/entities/api_message_entity/api_message_entity.dart';
 
-abstract class MyMeesageRepo {
-  Future<Either<Failure, MyMeesageModel>> sendMyMeesage({
-    required MyMeesageEntitie myMeesageEntitie,
-  });
+import '../entities/my_conversation_entity/conversation_entity.dart';
+import '../entities/my_conversation_entity/message_entity.dart';
+import '../entities/send_message_entity/send_message_entity.dart';
 
-  Future<Either<Failure, List<GetAllMyMeesagesModel>>> getAllMyMessages({
-    required String userId,
+abstract class MessageRepository {
+  Future<List<MyConversationEntity>> getMessagesWithUser({
+    required String token,
   });
+  Future<ApiMessageEntity> sendMessage({
+    required SendMessageEntity message,
+    required String token,
+  });
+  void sendMessageSocket({required String receiverId, required String text});
+  void onMessageReceived(void Function(MessageEntity) callback);
+  void connectSocket({required String token, required String userId});
+  void disconnectSocket();
+  Future<List<MessageEntity>> getUnreadMessages();
 }
