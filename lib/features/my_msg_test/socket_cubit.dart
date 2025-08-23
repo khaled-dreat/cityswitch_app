@@ -13,7 +13,7 @@ class SocketCubit extends Cubit<SocketState> {
     : super(const SocketState(isConnected: false, messages: []));
   void connect() {
     socket = IO.io(
-      'http://192.168.0.80:3000/',
+      'https://cityswitch-app-backend.onrender.com/',
       IO.OptionBuilder()
           .setTransports(['websocket'])
           .disableAutoConnect()

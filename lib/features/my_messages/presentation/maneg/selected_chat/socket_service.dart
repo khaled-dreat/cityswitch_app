@@ -10,11 +10,14 @@ class SocketService {
   SocketService._internal();
 
   void connect(String userId) {
-    socket = IO.io("http://192.168.0.80:3000/", <String, dynamic>{
-      'transports': ['websocket'],
-      'autoConnect': false,
-      'query': {'userId': userId},
-    });
+    socket = IO.io(
+      "https://cityswitch-app-backend.onrender.com/",
+      <String, dynamic>{
+        'transports': ['websocket'],
+        'autoConnect': false,
+        'query': {'userId': userId},
+      },
+    );
 
     socket.connect();
 

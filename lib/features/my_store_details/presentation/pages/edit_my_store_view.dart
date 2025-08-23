@@ -94,7 +94,8 @@ class _EditMyStoreViewBodyState extends State<EditMyStoreViewBody> {
                     builder: (context, state) {
                       if (state is MyStoreSuccess) {
                         return ServerImagesDisplayWidget(
-                          baseUrl: "http://192.168.0.80:3000/",
+                          baseUrl:
+                              "https://cityswitch-app-backend.onrender.com/",
                           maxImages: 5,
                           initialImages: state.myStore.images ?? [],
                         );

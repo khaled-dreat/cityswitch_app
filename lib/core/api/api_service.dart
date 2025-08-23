@@ -12,7 +12,7 @@ import '../../features/my_store_details/domain/entities/edit_my_store_entite.dar
 class ApiService {
   final Dio _dio;
 
-  final baseUrl = "http://192.168.0.80:3000/";
+  final baseUrl = "https://cityswitch-app-backend.onrender.com/";
   final searchAddressesUrl = "https://nominatim.openstreetmap.org/search?";
   final stores = "stores";
   final categories = "categories";
@@ -27,16 +27,11 @@ class ApiService {
   ApiService(this._dio);
 
   Future<dynamic> getAllMyMessages({required String token}) async {
-    try {
-      final response = await _dio.get(
-        baseUrl + allMyMessages,
-        options: Options(headers: {'Authorization': 'Bearer $token'}),
-      );
-      log(response.data.toString());
-      return response.data;
-    } catch (e) {
-      rethrow;
-    }
+    final response = await _dio.get(
+      '$baseUrl$allMyMessages', // => .../api/messages/conversations
+      options: Options(headers: {'Authorization': 'Bearer $token'}),
+    );
+    return response.data;
   }
 
   Future<dynamic> getChatbyReceiverId({
@@ -44,8 +39,9 @@ class ApiService {
     required String receiverId,
   }) async {
     try {
+      final url = '$baseUrl/api/messages/conversation/$receiverId';
       final response = await _dio.get(
-        baseUrl + allMyMessages + receiverId,
+        url,
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
       log(response.data.toString());
@@ -59,18 +55,12 @@ class ApiService {
     required SendMessageEntity sendMessageEntity,
     required String token,
   }) async {
-    try {
-      var response = await _dio.post(
-        baseUrl + sendMyMeesage,
-        data: sendMessageEntity.toJson(),
-        options: Options(headers: {'Authorization': 'Bearer $token'}),
-      );
-
-      return response.data;
-    } catch (e) {
-      //   log('Error during GET request: $e');
-      rethrow;
-    }
+    final response = await _dio.post(
+      '$baseUrl$sendMyMeesage', // => .../api/messages/send
+      data: sendMessageEntity.toJson(),
+      options: Options(headers: {'Authorization': 'Bearer $token'}),
+    );
+    return response.data;
   }
 
   Future<dynamic> put({

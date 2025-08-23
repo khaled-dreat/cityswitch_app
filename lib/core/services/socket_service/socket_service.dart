@@ -13,7 +13,7 @@ class SocketService {
 
   void connect({required String token, required String userId}) {
     _socket = IO.io(
-      'http://192.168.0.80:3000',
+      'https://cityswitch-app-backend.onrender.com/',
       IO.OptionBuilder()
           .setTransports(['websocket'])
           .disableAutoConnect()

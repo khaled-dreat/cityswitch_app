@@ -242,7 +242,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                 borderRadius: BorderRadius.circular(25),
               ),
               child: Image.network(
-                "http://192.168.0.80:3000/${contact.otherUser!.profileImg}",
+                "https://cityswitch-app-backend.onrender.com/${contact.otherUser!.profileImg}",
                 fit: BoxFit.fill,
                 errorBuilder:
                     (context, error, stackTrace) => Icon(Icons.person),
@@ -416,7 +416,7 @@ class _ChatViewState extends State<ChatView> {
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Image.network(
-                      "http://192.168.0.80:3000/${selectedChat.otherUser!.profileImg}",
+                      "https://cityswitch-app-backend.onrender.com/${selectedChat.otherUser!.profileImg}",
                       fit: BoxFit.fill,
                       errorBuilder:
                           (context, error, stackTrace) => Icon(Icons.person),

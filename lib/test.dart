@@ -47,7 +47,7 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
                       decoration: BoxDecoration(
                         image: DecorationImage(
                           image: NetworkImage(
-                            'http://192.168.0.80:3000/${store.images![index]}',
+                            'https://cityswitch-app-backend.onrender.com/${store.images![index]}',
                           ),
                           fit: BoxFit.cover,
                         ),

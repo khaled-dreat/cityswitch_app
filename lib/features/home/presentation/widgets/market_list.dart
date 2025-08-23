@@ -75,7 +75,7 @@ class MarketList extends StatelessWidget {
                         distanceKm: 10,
                         rating: 4.5,
                         imageUrl:
-                            'http://192.168.0.80:3000/${state.stors.elementAt(index).images!.first}',
+                            'https://cityswitch-app-backend.onrender.com/${state.stors.elementAt(index).images!.first}',
                         userName: 'Ahmed Amer',
                         isOpen: true,
                       );
