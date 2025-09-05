@@ -43,9 +43,9 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
 
   void _setupPages() {
     _pages = [
-      widget.userHasStore
-          ? const EditMyStoreViewBody()
-          : const AddStoreViewBody(),
+      // widget.userHasStore
+      const EditMyStoreViewBody(),
+      // : const AddStoreViewBody(),
       const ProfileView(),
       const HomeView(),
       MessagesScreen(),
